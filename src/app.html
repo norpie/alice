@@ -4,8 +4,95 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tauri + SvelteKit + Typescript App</title>
+    <title>Alice</title>
     %sveltekit.head%
+    <style>
+      /* Main font */
+      @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap");
+      /* Code font */
+      @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background-color: var(--color-background);
+        color: var(--color-primary);
+        font-family: var(--font-default);
+
+        transition:
+          background-color 0.5s ease-in,
+          color 0.5s ease-in;
+
+        /* Selected Theme */
+        --color-background: var(--color-dark-background);
+        --color-primary: var(--color-dark-primary);
+        --color-secondary: var(--color-dark-secondary);
+
+        --color-action: var(--color-dark-action);
+        --color-accent: var(--color-dark-accent);
+        --color-disabled: var(--color-dark-disabled);
+
+        --color-fg-success: var(--color-dark-fg-success);
+        --color-bg-success: var(--color-dark-bg-success);
+        --color-fg-fail: var(--color-dark-fg-fail);
+        --color-bg-fail: var(--color-dark-bg-fail);
+
+        --color-fg-warning: var(--color-dark-fg-warning);
+        --color-bg-warning: var(--color-dark-bg-warning);
+        --color-fg-info: var(--color-dark-fg-info);
+        --color-bg-info: var(--color-dark-bg-info);
+
+        /* Dark Colors */
+        --color-dark-background: #343a40;
+        --color-dark-primary: #f8f9fa;
+        --color-dark-secondary: #ced4da;
+
+        --color-dark-action: #007bff;
+        --color-dark-accent: #6c757d;
+        --color-dark-disabled: #495057;
+
+        --color-dark-fg-success: #28a745;
+        --color-dark-bg-success: #d4edda;
+        --color-dark-fg-fail: #dc3545;
+        --color-dark-bg-fail: #f8d7da;
+
+        --color-dark-fg-warning: #ffc107;
+        --color-dark-bg-warning: #fff3cd;
+        --color-dark-fg-info: #17a2b8;
+        --color-dark-bg-info: #d1ecf1;
+
+        /* Light Colors */
+        --color-light-background: #f8f9fa;
+        --color-light-primary: #343a40;
+        --color-light-secondary: #495057;
+
+        --color-light-action: #007bff;
+        --color-light-accent: #6c757d;
+        --color-light-disabled: #ced4da;
+
+        --color-light-fg-success: #28a745;
+        --color-light-bg-success: #d4edda;
+        --color-light-fg-fail: #dc3545;
+        --color-light-bg-fail: #f8d7da;
+
+        --color-light-fg-warning: #ffc107;
+        --color-light-bg-warning: #fff3cd;
+        --color-light-fg-info: #17a2b8;
+        --color-light-bg-info: #d1ecf1;
+
+        --font-default: "Inter Tight", sans-serif;
+        --font-mono: "IBM Plex Mono", monospace;
+        --font-weight: 400;
+        --font-weight-action: 600;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body data-sveltekit-preload-data="hover">
     <div style="display: contents">%sveltekit.body%</div>
