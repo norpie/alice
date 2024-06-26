@@ -9,23 +9,45 @@ use crate::{
     responses::{CompletionResult, ListResult, Response, SimpleResult, Status},
 };
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum ConnectionStatus {
+    Connected,
+    Disconnected,
+}
+
 pub struct UllmAPI {
-    pub stream: WebSocketStream<MaybeTlsStream<TcpStream>>,
+    pub address: String,
+    pub stream: Option<WebSocketStream<MaybeTlsStream<TcpStream>>>,
+    pub status: ConnectionStatus,
 }
 
 impl UllmAPI {
-    pub async fn new(url: &str) -> Result<Self> {
-        let (stream, _) = tokio_tungstenite::connect_async(url)
-            .await
-            .expect("Failed to connect");
-        Ok(UllmAPI { stream })
+    pub async fn new(url: &str) -> Self {
+        UllmAPI {
+            address: url.to_string(),
+            stream: None,
+            status: ConnectionStatus::Disconnected,
+        }
     }
 
-    pub async fn close(&mut self) {
+    pub async fn connect(&mut self) -> Result<()> {
+        let (stream, _) = tokio_tungstenite::connect_async(&self.address)
+            .await
+            .map_err(|e| anyhow::anyhow!(e))?;
+        self.stream = Some(stream);
+        self.status = ConnectionStatus::Connected;
+        Ok(())
+    }
+
+    pub async fn close(&mut self) -> Result<()> {
         self.stream
+            .as_mut()
+            .ok_or_else(|| anyhow::anyhow!("No stream to close"))?
             .close(None)
             .await
-            .expect("Failed to close connection");
+            .map_err(|e| anyhow::anyhow!(e))?;
+        self.status = ConnectionStatus::Disconnected;
+        Ok(())
     }
 
     async fn call_single<T: Serialize, U: DeserializeOwned>(
@@ -37,17 +59,18 @@ impl UllmAPI {
 
         // Send the JSON message over the WebSocket
         self.stream
+            .as_mut()
+            .ok_or_else(|| anyhow::anyhow!("No stream to use"))?
             .send(Message::Text(json_msg))
             .await
             .expect("Failed to send message");
 
-        if let Some(response) = self.stream.next().await {
+        if let Some(response) = self.stream.as_mut().unwrap().next().await {
             // Wait for the response
             match response {
                 Ok(msg) => match msg {
                     Message::Text(txt) => {
                         // Parse the JSON response
-                        println!("{}", txt);
                         Ok(serde_json::from_str(&txt).unwrap())
                     }
                     _ => anyhow::bail!("Unexpected message type"),
@@ -57,6 +80,16 @@ impl UllmAPI {
         } else {
             anyhow::bail!("No response received")
         }
+    }
+
+    pub async fn is_alive(&mut self) -> bool {
+        let call: MethodCall<()> = MethodCall {
+            method: "ping".to_string(),
+            id: uuid::Uuid::new_v4(),
+            params: None,
+        };
+        let response: Result<Response<SimpleResult>> = self.call_single(call).await;
+        response.is_ok()
     }
 
     pub async fn ping(&mut self) -> Result<Response<SimpleResult>> {
@@ -77,7 +110,11 @@ impl UllmAPI {
         self.call_single(call).await
     }
 
-    pub async fn load_model(&mut self, engine: &str, model: &str) -> Result<Response<SimpleResult>> {
+    pub async fn load_model(
+        &mut self,
+        engine: &str,
+        model: &str,
+    ) -> Result<Response<SimpleResult>> {
         let call: MethodCall<LoadParams> = MethodCall {
             method: "load_model".to_string(),
             id: uuid::Uuid::new_v4(),
@@ -105,11 +142,13 @@ impl UllmAPI {
 
         // Send the JSON message over the WebSocket
         self.stream
+            .as_mut()
+            .ok_or_else(|| anyhow::anyhow!("No stream to use"))?
             .send(Message::Text(json_msg))
             .await
             .expect("Failed to send message");
 
-        while let Some(response) = self.stream.next().await {
+        while let Some(response) = self.stream.as_mut().unwrap().next().await {
             // Wait for the response
             match response {
                 Ok(msg) => match msg {
@@ -147,7 +186,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_complete() {
-        let mut api = super::UllmAPI::new("ws://localhost:8081").await.unwrap();
+        let mut api = super::UllmAPI::new("ws://localhost:8081").await;
         let list_call: MethodCall<()> = super::MethodCall {
             method: "list_models".to_string(),
             id: uuid::Uuid::new_v4(),
