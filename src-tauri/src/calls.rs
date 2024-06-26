@@ -9,6 +9,12 @@ pub struct MethodCall<T> {
 }
 
 #[derive(Debug, Serialize)]
+pub struct LoadParams {
+    pub engine: String,
+    pub model: String
+}
+
+#[derive(Debug, Serialize)]
 pub struct CompletionParams {
     pub snippet: String,
 }

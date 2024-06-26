@@ -1,3 +1,5 @@
+use std::fmt::{self, Display, Formatter};
+
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -19,10 +21,26 @@ pub enum Status {
     Final,
 }
 
+impl Display for Status {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            Status::Success => write!(f, "Success"),
+            Status::Pong => write!(f, "Pong"),
+            Status::Ongoing => write!(f, "Ongoing"),
+            Status::Final => write!(f, "Final"),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CompletionResult {
     pub status: Status,
     pub tokens: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ListResult {
+    pub models: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
