@@ -118,7 +118,7 @@ fn emit_connection_status(status: ConnectionStatus) {
         .get()
         .ok_or_else(|| anyhow::anyhow!("Failed to get app"))
         .unwrap()
-        .emit("connection_status", payload);
+        .emit("connection-status", payload);
     if let Err(e) = res {
         println!("Failed to emit connection status: {}", e);
     }
