@@ -2,14 +2,23 @@
     import { P, H, Button, TextInput } from '../lib';
     import Sidebar from '../components/Sidebar.svelte';
     import { invoke } from '@tauri-apps/api/core';
+    import { listen } from '@tauri-apps/api/event';
+
+    listen('connection-status', (event) => {
+        let inputElement = document.querySelector('input[name="userMessage"]');
+        if (inputElement && inputElement instanceof HTMLInputElement) {
+            inputElement.value = event.payload.status;
+        }
+    });
 
     async function send() {
-        let res: string = await invoke('ping');
-        console.log(res);
+        console.log('Sending message...');
+        let res: string = await invoke('check_connection');
         let inputElement = document.querySelector('input[name="userMessage"]');
         if (inputElement && inputElement instanceof HTMLInputElement) {
             inputElement.value = res;
         }
+
     }
 </script>
 
