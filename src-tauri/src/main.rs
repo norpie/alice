@@ -5,7 +5,7 @@ use std::sync::OnceLock;
 
 use anyhow::Result;
 use responses::Response;
-use sockets::ULLMAPI;
+use sockets::UllmAPI;
 use tokio::sync::Mutex;
 
 use crate::responses::SimpleResult;
@@ -16,7 +16,7 @@ mod sockets;
 
 static API_URL: &str = "ws://localhost:8081";
 
-static MANAGER: OnceLock<Mutex<ULLMAPI>> = OnceLock::new();
+static MANAGER: OnceLock<Mutex<UllmAPI>> = OnceLock::new();
 
 #[tauri::command]
 async fn ping() -> Result<String, String> {
@@ -34,7 +34,7 @@ async fn ping() -> Result<String, String> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let manager = ULLMAPI::new(API_URL).await?;
+    let manager = UllmAPI::new(API_URL).await?;
     MANAGER
         .set(Mutex::new(manager))
         .map_err(|_| anyhow::anyhow!("Failed to set manager"))?;

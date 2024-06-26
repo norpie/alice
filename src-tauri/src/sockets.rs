@@ -9,16 +9,16 @@ use crate::{
     responses::{CompletionResult, ListResult, Response, SimpleResult, Status},
 };
 
-pub struct ULLMAPI {
+pub struct UllmAPI {
     pub stream: WebSocketStream<MaybeTlsStream<TcpStream>>,
 }
 
-impl ULLMAPI {
+impl UllmAPI {
     pub async fn new(url: &str) -> Result<Self> {
         let (stream, _) = tokio_tungstenite::connect_async(url)
             .await
             .expect("Failed to connect");
-        Ok(ULLMAPI { stream })
+        Ok(UllmAPI { stream })
     }
 
     pub async fn close(&mut self) {
@@ -147,7 +147,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_complete() {
-        let mut api = super::ULLMAPI::new("ws://localhost:8081").await.unwrap();
+        let mut api = super::UllmAPI::new("ws://localhost:8081").await.unwrap();
         let list_call: MethodCall<()> = super::MethodCall {
             method: "list_models".to_string(),
             id: uuid::Uuid::new_v4(),
