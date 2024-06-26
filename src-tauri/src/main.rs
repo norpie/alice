@@ -4,41 +4,37 @@
 use std::sync::OnceLock;
 
 use anyhow::Result;
-use calls::MethodCall;
 use responses::Response;
-use serde_json::Value;
-use sockets::SocketManager;
+use sockets::ULLMAPI;
 use tokio::sync::Mutex;
-use uuid::Uuid;
+
+use crate::responses::SimpleResult;
 
 mod calls;
 mod responses;
 mod sockets;
 
-static MANAGER: OnceLock<Mutex<SocketManager>> = OnceLock::new();
+static API_URL: &str = "ws://localhost:8081";
+
+static MANAGER: OnceLock<Mutex<ULLMAPI>> = OnceLock::new();
 
 #[tauri::command]
 async fn ping() -> Result<String, String> {
-    let call: MethodCall<()> = calls::MethodCall {
-        id: Uuid::new_v4(),
-        method: "ping".to_string(),
-        params: None,
-    };
-    let response: Response<Value> = MANAGER
+    let response: Response<SimpleResult> = MANAGER
         .get()
         .unwrap()
         .lock()
         .await
-        .call(call)
+        .ping()
         .await
         .map_err(|e| e.to_string())?;
     println!("{:?}", response);
-    Ok(response.result.to_string())
+    Ok(response.result.status.to_string())
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let manager = SocketManager::connect().await;
+    let manager = ULLMAPI::new(API_URL).await?;
     MANAGER
         .set(Mutex::new(manager))
         .map_err(|_| anyhow::anyhow!("Failed to set manager"))?;
