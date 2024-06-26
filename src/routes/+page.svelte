@@ -1,9 +1,15 @@
 <script lang="ts">
     import { P, H, Button, TextInput } from '../lib';
     import Sidebar from '../components/Sidebar.svelte';
+    import { invoke } from '@tauri-apps/api/core';
 
-    function send() {
-        console.log('send');
+    async function send() {
+        let res: string = await invoke('ping');
+        console.log(res);
+        let inputElement = document.querySelector('input[name="userMessage"]');
+        if (inputElement && inputElement instanceof HTMLInputElement) {
+            inputElement.value = res;
+        }
     }
 </script>
 
