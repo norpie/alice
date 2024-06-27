@@ -39,6 +39,22 @@ struct ConnectionStatusEvent {
 }
 
 #[tauri::command]
+async fn complete(snippet: String) -> Result<String, String> {
+    let manager = MANAGER
+        .get()
+        .ok_or_else(|| "Failed to get manager".to_string())?;
+    let final_tokens = manager
+        .lock()
+        .await
+        .completion(snippet, |tokens| {
+            emit_completion_tokens(CompletionTokens { tokens })
+        })
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(final_tokens)
+}
+
+#[tauri::command]
 async fn check_connection() -> Result<ConnectionStatus, String> {
     let manager = MANAGER
         .get()
@@ -76,7 +92,7 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![ping, check_connection])
+        .invoke_handler(tauri::generate_handler![ping, check_connection, complete])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
     MANAGER
@@ -114,6 +130,23 @@ async fn autorestart() {
                 }
             }
         }
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct CompletionTokens {
+    tokens: String,
+}
+
+async fn emit_completion_tokens(tokens: CompletionTokens) {
+    println!("Emitting completion tokens: {:?}", tokens);
+    let res = APP
+        .get()
+        .ok_or_else(|| anyhow::anyhow!("Failed to get app"))
+        .unwrap()
+        .emit("completion-tokens", tokens);
+    if let Err(e) = res {
+        println!("Failed to emit completion tokens: {}", e);
     }
 }
 
