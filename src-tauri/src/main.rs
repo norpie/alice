@@ -13,9 +13,9 @@ use tokio::sync::Mutex;
 use crate::responses::SimpleResult;
 
 mod calls;
+mod chat;
 mod responses;
 mod sockets;
-mod chat;
 
 static API_URL: &str = "ws://localhost:8081";
 
@@ -116,6 +116,11 @@ async fn autorestart() {
             .unwrap()
             .lock()
             .await;
+        if let Some(last_ping) = manager.last_ping {
+            if last_ping + std::time::Duration::from_secs(10) > std::time::Instant::now() {
+                continue;
+            }
+        }
         match manager.status {
             sockets::ConnectionStatus::Disconnected => {
                 let res = manager.connect().await;

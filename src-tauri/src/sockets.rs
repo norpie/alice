@@ -19,6 +19,7 @@ pub struct UllmAPI {
     pub address: String,
     pub stream: Option<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     pub status: ConnectionStatus,
+    pub last_ping: Option<std::time::Instant>,
 }
 
 impl UllmAPI {
@@ -27,6 +28,7 @@ impl UllmAPI {
             address: url.to_string(),
             stream: None,
             status: ConnectionStatus::Disconnected,
+            last_ping: None,
         }
     }
 
@@ -36,6 +38,7 @@ impl UllmAPI {
             .map_err(|e| anyhow::anyhow!(e))?;
         self.stream = Some(stream);
         self.status = ConnectionStatus::Connected;
+        self.last_ping = Some(std::time::Instant::now());
         Ok(())
     }
 
@@ -46,6 +49,7 @@ impl UllmAPI {
             .close(None)
             .await
             .map_err(|e| anyhow::anyhow!(e))?;
+        self.last_ping = None;
         self.status = ConnectionStatus::Disconnected;
         Ok(())
     }
@@ -71,6 +75,7 @@ impl UllmAPI {
                 Ok(msg) => match msg {
                     Message::Text(txt) => {
                         // Parse the JSON response
+                        self.last_ping = Some(std::time::Instant::now());
                         Ok(serde_json::from_str(&txt).unwrap())
                     }
                     _ => anyhow::bail!("Unexpected message type"),
@@ -154,6 +159,7 @@ impl UllmAPI {
                 Ok(msg) => match msg {
                     Message::Text(txt) => {
                         // Parse the JSON response
+                        self.last_ping = Some(std::time::Instant::now());
                         let response: Response<CompletionResult> =
                             serde_json::from_str(&txt).map_err(|e| anyhow::anyhow!(e))?;
                         match response.result.status {
