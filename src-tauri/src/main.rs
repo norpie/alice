@@ -21,11 +21,15 @@ static API_URL: &str = "ws://localhost:8081";
 static MANAGER: OnceLock<Mutex<UllmAPI>> = OnceLock::new();
 static APP: OnceLock<AppHandle> = OnceLock::new();
 
-#[derive(Clone, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 enum ConnectionStatus {
+    #[serde(rename = "connected")]
     Connected,
+    #[serde(rename = "disconnected")]
     Disconnected,
+    #[serde(rename = "lost")]
     Lost,
+    #[serde(rename = "reconnected")]
     Reconnected,
 }
 
@@ -65,10 +69,10 @@ async fn main() -> Result<()> {
     MANAGER
         .set(Mutex::new(manager))
         .map_err(|_| anyhow::anyhow!("Failed to set manager"))?;
-    tokio::spawn(autorestart());
     tauri::Builder::default()
         .setup(|app| {
             APP.set(app.handle().clone()).unwrap();
+            tokio::spawn(autorestart());
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
@@ -86,6 +90,7 @@ async fn main() -> Result<()> {
 }
 
 async fn autorestart() {
+    emit_connection_status(ConnectionStatus::Disconnected);
     loop {
         tokio::time::sleep(std::time::Duration::from_secs(5)).await;
         let mut manager = MANAGER
@@ -113,6 +118,7 @@ async fn autorestart() {
 }
 
 fn emit_connection_status(status: ConnectionStatus) {
+    println!("Emitting connection status: {:?}", status);
     let payload = ConnectionStatusEvent { status };
     let res = APP
         .get()
