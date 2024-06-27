@@ -1,24 +1,19 @@
 <script lang="ts">
     import { P, H, Button, TextInput } from '../lib';
     import Sidebar from '../components/Sidebar.svelte';
-    import { invoke } from '@tauri-apps/api/core';
-    import { listen } from '@tauri-apps/api/event';
+    import ConnectionIndicator from '../components/ConnectionIndicator.svelte';
 
-    listen('connection-status', (event) => {
-        let inputElement = document.querySelector('input[name="userMessage"]');
-        if (inputElement && inputElement instanceof HTMLInputElement) {
-            inputElement.value = event.payload.status;
-        }
-    });
+    const { data }: {
+        data: {
+            status: 'connected' | 'disconnected' | 'reconnected' | 'lost';
+        };
+    } = $props()
 
-    async function send() {
-        console.log('Sending message...');
-        let res: string = await invoke('check_connection');
-        let inputElement = document.querySelector('input[name="userMessage"]');
-        if (inputElement && inputElement instanceof HTMLInputElement) {
-            inputElement.value = res;
-        }
+    let status = $state("disconnected");
+    status = data.status;
 
+    function send() {
+        console.log('send');
     }
 </script>
 
@@ -50,6 +45,7 @@
                 </div>
             </div>
             <div class="bottom-bar">
+                <ConnectionIndicator bind:status />
                 <TextInput name="userMessage" placeholder="Chat with Alice." />
                 <Button onclick={send}>Send</Button>
             </div>
@@ -111,6 +107,6 @@
     }
 
     .bottom-bar :global(button) {
-        margin: 0 0 0 1rem;
+        margin: 0 1rem 0 1rem;
     }
 </style>
