@@ -15,6 +15,7 @@ use crate::responses::SimpleResult;
 mod calls;
 mod responses;
 mod sockets;
+mod chat;
 
 static API_URL: &str = "ws://localhost:8081";
 
