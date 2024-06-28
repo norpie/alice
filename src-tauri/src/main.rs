@@ -16,6 +16,7 @@ mod calls;
 mod chat;
 mod responses;
 mod sockets;
+mod prompt;
 
 static API_URL: &str = "ws://localhost:8081";
 
