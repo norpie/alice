@@ -113,7 +113,7 @@ async fn main() -> Result<()> {
 async fn autorestart() {
     emit_connection_status(ConnectionStatus::Disconnected);
     loop {
-        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        tokio::time::sleep(std::time::Duration::from_secs(3)).await;
         let mut manager = MANAGER
             .get()
             .ok_or_else(|| anyhow::anyhow!("Failed to get manager"))
@@ -121,7 +121,7 @@ async fn autorestart() {
             .lock()
             .await;
         if let Some(last_ping) = manager.last_ping {
-            if last_ping + std::time::Duration::from_secs(10) > std::time::Instant::now() {
+            if last_ping + std::time::Duration::from_secs(3) > std::time::Instant::now() {
                 continue;
             }
         }
