@@ -68,22 +68,27 @@ impl UllmAPI {
             .send(Message::Text(json_msg))
             .await
             .expect("Failed to send message");
-
-        if let Some(response) = self.stream.as_mut().unwrap().next().await {
-            // Wait for the response
-            match response {
-                Ok(msg) => match msg {
-                    Message::Text(txt) => {
-                        // Parse the JSON response
-                        self.last_ping = Some(std::time::Instant::now());
-                        Ok(serde_json::from_str(&txt).unwrap())
-                    }
-                    _ => anyhow::bail!("Unexpected message type"),
-                },
-                Err(e) => anyhow::bail!(e),
+        loop {
+            if let Some(response) = self.stream.as_mut().unwrap().next().await {
+                // Wait for the response
+                match response {
+                    Ok(msg) => match msg {
+                        Message::Text(txt) => {
+                            // Parse the JSON response
+                            self.last_ping = Some(std::time::Instant::now());
+                            return serde_json::from_str(&txt).map_err(|e| anyhow::anyhow!(e));
+                        },
+                        Message::Close(close) => {
+                            anyhow::bail!("Connection closed: {:?}", close);
+                        },
+                        Message::Ping(ping) => {
+                            self.stream.as_mut().unwrap().send(Message::Pong(ping)).await.map_err(|e| anyhow::anyhow!(e))?;
+                        },
+                        _ => anyhow::bail!("Unexpected message type, {:?}", msg),
+                    },
+                    Err(e) => anyhow::bail!(e),
+                }
             }
-        } else {
-            anyhow::bail!("No response received")
         }
     }
 
@@ -171,8 +176,14 @@ impl UllmAPI {
                             }
                             _ => anyhow::bail!("Unexpected status"),
                         }
-                    }
-                    _ => anyhow::bail!("Unexpected message type"),
+                    },
+                    Message::Close(close) => {
+                        anyhow::bail!("Connection closed: {:?}", close);
+                    },
+                    Message::Ping(ping) => {
+                        self.stream.as_mut().unwrap().send(Message::Pong(ping)).await?;
+                    },
+                    _ => anyhow::bail!("Unexpected message type, {:?}", msg),
                 },
                 Err(e) => anyhow::bail!(e),
             }
