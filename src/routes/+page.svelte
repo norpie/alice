@@ -41,7 +41,7 @@
         history.push({ role: "user", message });
         inputElement.value = '';
         history.push({ role: "bot", message: "..." });
-        let completion: string = await invoke("complete", { snippet: message });
+        let completion: string = await invoke("complete", { history });
         history.pop();
         history.push({ role: "bot", message: completion });
     }

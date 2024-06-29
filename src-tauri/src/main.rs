@@ -4,6 +4,8 @@
 use std::sync::OnceLock;
 
 use anyhow::Result;
+use chat::History;
+use prompt::chat_prompt;
 use responses::Response;
 use serde::Serialize;
 use sockets::UllmAPI;
@@ -41,14 +43,15 @@ struct ConnectionStatusEvent {
 }
 
 #[tauri::command]
-async fn complete(snippet: String) -> Result<String, String> {
+async fn complete(history: History) -> Result<String, String> {
     let manager = MANAGER
         .get()
         .ok_or_else(|| "Failed to get manager".to_string())?;
+    let prompt = chat_prompt(history, "bot".into());
     let final_tokens = manager
         .lock()
         .await
-        .completion(snippet, |tokens| {
+        .completion(prompt, |tokens| {
             emit_completion_tokens(CompletionTokens { tokens })
         })
         .await
