@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { P, Button, TextInput } from '../lib';
+    import { P, Button, Textarea } from '../lib';
     import { invoke } from '@tauri-apps/api/core';
     import { listen } from '@tauri-apps/api/event';
     import Sidebar from '../components/Sidebar.svelte';
@@ -51,7 +51,7 @@
     });
 
     async function send() {
-        let inputElement = document.querySelector('input[name="userMessage"]') as HTMLInputElement;
+        let inputElement = document.querySelector('textarea[name="userMessage"]') as HTMLInputElement;
         if (!inputElement) return;
         let message = inputElement.value;
         if (!message) return;
@@ -112,7 +112,7 @@
         </div>
         <div class="bottom-bar">
             <ConnectionIndicator bind:status />
-            <TextInput name="userMessage" placeholder="Chat with Alice." />
+            <Textarea rows="1" name="userMessage" placeholder="Chat with Alice." />
             <Button onclick={send}>Send</Button>
         </div>
     </div>
@@ -133,7 +133,7 @@
         flex-grow: 1;
         height: 100%;
         max-width: 1600px;
-        min-width: 800px;
+        min-width: 720px;
         flex-direction: column;
         justify-content: space-between;
     }
@@ -166,7 +166,7 @@
         padding: 1rem 0 1rem 0;
     }
 
-    .bottom-bar :global(input) {
+    .bottom-bar :global(textarea) {
         width: 100%;
         margin-left: 1rem;
         margin-right: 1rem;
