@@ -5,6 +5,9 @@
     import Sidebar from '../components/Sidebar.svelte';
     import ConnectionIndicator from '../components/ConnectionIndicator.svelte';
 
+    import showdown from 'showdown';
+    let converter = new showdown.Converter();
+
     const { data }: {
         data: {
             status: 'connected' | 'disconnected' | 'reconnected' | 'lost';
@@ -18,7 +21,7 @@
         tokens: string
     }
 
-    listen<CompletionTokens>('completion-tokens', (event) => {
+    listen<CompletionTokens>('completion-tokens', async (event) => {
         if (!event.payload || !event.payload.tokens) {
             return;
         }
@@ -30,7 +33,12 @@
         if (latest.content === "...") {
             latest.content = "";
         }
-        history.messages.push({ author: "bot", content: latest.content + event.payload.tokens, timestamp: new Date()});
+        history.messages.push({
+            author: "bot",
+            content: latest.content + event.payload.tokens,
+            html: converter.makeHtml(latest.content + event.payload.tokens),
+            timestamp: new Date()
+        });
     });
 
     async function send() {
@@ -38,22 +46,24 @@
         if (!inputElement) return;
         let message = inputElement.value;
         if (!message) return;
-        history.messages.push({ author: "user", content: message, timestamp: new Date()});
+        history.messages.push({ author: "user", content: message, html: converter.makeHtml(message), timestamp: new Date()});
         inputElement.value = '';
-        history.messages.push({ author: "bot", content: "...", timestamp: new Date()});
         let completion = "";
         try {
-            completion = await invoke("complete_history", { history });
+            let future: Promise<string> = invoke("complete_history", { history });
+            history.messages.push({ author: "bot", content: "...", html: converter.makeHtml("..."),timestamp: new Date()});
+            completion = await future;
         } catch (error) {
             completion = "I'm sorry, I can't do that right now.: " + error + ".";
         }
         history.messages.pop();
-        history.messages.push({ author: "bot", content: completion, timestamp: new Date()});
+        history.messages.push({ author: "bot", content: completion, html: converter.makeHtml(completion), timestamp: new Date()});
     }
 
     interface Message {
         author: 'user' | 'bot',
         content: string,
+        html: string,
         timestamp: Date
     }
 
@@ -63,12 +73,14 @@
         initialIndex: number
     }
 
+    const initialContent = "Hi, I'm Alice, your personal assistant. I can help you with a lot of things.\n## Capibilities\n- Search for information on the web.\n- Help you with your homework.\n- Write stories.\n- Help you with your workout plan.\n- Write code.\n## Examples\n- Create a workout plan.\n- Help me with my math homework.\n- Write a story about a dragon.\n- Write a program that prints \"Hello, World!\".";
     let history: History = $state({
         id: "46695d58-a0d0-4e26-a457-f210bbb1106f",
         initialIndex: 0,
         messages: [{
             author: "bot",
-            content: "Hi, I'm Alice, your personal assistant. I can help you with a lot of things.",
+            content: initialContent,
+            html: converter.makeHtml(initialContent),
             timestamp: new Date()
         }]});
 </script>
@@ -85,7 +97,7 @@
                         </div>
                     {:else}
                         <div class="bot-message">
-                            <P>{message.content}</P>
+                            {@html message.html}
                         </div>
                     {/if}
                 {/each}
