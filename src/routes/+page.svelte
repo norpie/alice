@@ -21,6 +21,7 @@
         tokens: string
     }
 
+    let lastCompletionTimestamp = 0;
     listen<CompletionTokens>('completion-tokens', async (event) => {
         if (!event.payload || !event.payload.tokens) {
             return;
@@ -33,10 +34,18 @@
         if (latest.content === "...") {
             latest.content = "";
         }
+        let content = latest.content + event.payload.tokens;
+        let html = latest.html;
+        let now = Date.now();
+        let diff = now - lastCompletionTimestamp;
+        if (diff > 10 || lastCompletionTimestamp === 0) {
+            html = converter.makeHtml(content);
+            lastCompletionTimestamp = now;
+        }
         history.messages.push({
             author: "bot",
-            content: latest.content + event.payload.tokens,
-            html: converter.makeHtml(latest.content + event.payload.tokens),
+            content,
+            html,
             timestamp: new Date()
         });
     });
