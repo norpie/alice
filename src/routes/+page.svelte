@@ -132,8 +132,8 @@
         display: flex;
         flex-grow: 1;
         height: 100%;
-        max-width: 1600px;
-        min-width: 720px;
+        max-width: 1200px;
+        min-width: 700px;
         flex-direction: column;
         justify-content: space-between;
     }
@@ -142,11 +142,23 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 30px,
+            black calc(100% - 30px),
+            transparent 100%
+        );
+        padding: 0 3rem 3rem 3rem;
     }
 
-    .bot-message {
-        border: 1px solid var(--color-action);
-        width: 100%;
+    .history::-webkit-scrollbar {
+        display: none;
+    }
+
+    .history :global(p) {
+        text-align: justify;
+        text-justify: inter-word;
     }
 
     .user-message {
@@ -160,10 +172,9 @@
 
     .bottom-bar {
         display: flex;
-        width: 100%;
         align-items: center;
         justify-content: space-between;
-        padding: 1rem 0 1rem 0;
+        margin: 1rem 1rem 1rem 1rem;
     }
 
     .bottom-bar :global(textarea) {
