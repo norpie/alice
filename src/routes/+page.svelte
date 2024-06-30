@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { P, H, Button, TextInput } from '../lib';
+    import { P, Button, TextInput } from '../lib';
     import { invoke } from '@tauri-apps/api/core';
     import { listen } from '@tauri-apps/api/event';
     import Sidebar from '../components/Sidebar.svelte';
@@ -11,7 +11,7 @@
         };
     } = $props()
 
-    let status = $state("disconnected");
+    let status = $state(data.status);
     status = data.status;
 
     interface CompletionTokens {
@@ -23,14 +23,14 @@
             return;
         }
         // Remove latest bot message
-        let latest = history.pop();
-        if (!latest || latest.role !== "bot") {
+        let latest = history.messages.pop();
+        if (!latest || latest.author !== "bot") {
             return;
         }
-        if (latest.message === "...") {
-            latest.message = "";
+        if (latest.content === "...") {
+            latest.content = "";
         }
-        history.push({ role: "bot", message: latest.message + event.payload.tokens });
+        history.messages.push({ author: "bot", content: latest.content + event.payload.tokens, timestamp: new Date()});
     });
 
     async function send() {
@@ -38,23 +38,39 @@
         if (!inputElement) return;
         let message = inputElement.value;
         if (!message) return;
-        history.push({ role: "user", message });
+        history.messages.push({ author: "user", content: message, timestamp: new Date()});
         inputElement.value = '';
-        history.push({ role: "bot", message: "..." });
-        let completion: string = await invoke("complete", { history });
-        history.pop();
-        history.push({ role: "bot", message: completion });
+        history.messages.push({ author: "bot", content: "...", timestamp: new Date()});
+        let completion = "";
+        try {
+            completion = await invoke("complete_history", { history });
+        } catch (error) {
+            completion = "I'm sorry, I can't do that right now.: " + error + ".";
+        }
+        history.messages.pop();
+        history.messages.push({ author: "bot", content: completion, timestamp: new Date()});
     }
 
     interface Message {
-        role: 'user' | 'bot',
-        message: string
+        author: 'user' | 'bot',
+        content: string,
+        timestamp: Date
     }
 
-    let history: Message[] = $state([{
-        role: "bot",
-        message: "Hi, I'm Alice, your personal assistant. I can help you with a lot of things."
-    }]);
+    interface History {
+        id: string,
+        messages: Message[],
+        initialIndex: number
+    }
+
+    let history: History = $state({
+        id: "46695d58-a0d0-4e26-a457-f210bbb1106f",
+        initialIndex: 0,
+        messages: [{
+            author: "bot",
+            content: "Hi, I'm Alice, your personal assistant. I can help you with a lot of things.",
+            timestamp: new Date()
+        }]});
 </script>
 
 <Sidebar />
@@ -62,14 +78,14 @@
     <div class="chat-section">
         <div class="chat-box">
             <div class="history">
-                {#each history as message}
-                    {#if message.role === "user"}
+                {#each history.messages as message}
+                    {#if message.author === "user"}
                         <div class="user-message">
-                            <P>{message.message}</P>
+                            <P>{message.content}</P>
                         </div>
                     {:else}
                         <div class="bot-message">
-                            <P>{message.message}</P>
+                            <P>{message.content}</P>
                         </div>
                     {/if}
                 {/each}

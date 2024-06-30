@@ -4,7 +4,7 @@
 use std::sync::OnceLock;
 
 use anyhow::Result;
-use chat::History;
+use chat::PartialHistory;
 use prompt::chat_prompt;
 use responses::Response;
 use serde::Serialize;
@@ -43,11 +43,14 @@ struct ConnectionStatusEvent {
 }
 
 #[tauri::command]
-async fn complete(history: History) -> Result<String, String> {
+async fn complete_history(history: PartialHistory) -> Result<String, String> {
+    let history = history.into_history();
+    dbg!(&history);
     let manager = MANAGER
         .get()
         .ok_or_else(|| "Failed to get manager".to_string())?;
     let prompt = chat_prompt(history, "bot".into());
+    dbg!(&prompt);
     let final_tokens = manager
         .lock()
         .await
@@ -56,6 +59,7 @@ async fn complete(history: History) -> Result<String, String> {
         })
         .await
         .map_err(|e| e.to_string())?;
+    dbg!(&final_tokens);
     Ok(final_tokens)
 }
 
@@ -97,7 +101,7 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![ping, check_connection, complete])
+        .invoke_handler(tauri::generate_handler![ping, check_connection, complete_history])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
     MANAGER

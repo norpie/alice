@@ -36,8 +36,19 @@ impl History {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PartialHistory {
     pub id: Uuid,
+    #[serde(rename = "initialIndex")]
     pub initial_index: usize,
     pub messages: Vec<Message>,
+}
+
+impl PartialHistory {
+    pub fn into_history(self) -> History {
+        History {
+            timestamp: Utc::now(),
+            id: self.id,
+            messages: self.messages,
+        }
+    }
 }
 
 #[cfg(test)]
