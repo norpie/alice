@@ -87,47 +87,24 @@
 
 <Sidebar />
 <main>
-    <div class="chat-section">
-        <div class="chat-box">
-            <div class="history">
-                {#each history.messages as message}
-                    {#if message.author === "user"}
-                        <div class="user-message">
-                            <P>{message.content}</P>
-                        </div>
-                    {:else}
-                        <div class="bot-message">
-                            {@html message.html}
-                        </div>
-                    {/if}
-                {/each}
-                <!-- <div class="user-message"> -->
-                <!--     <P>Hi, Alice, what can you do?</P> -->
-                <!-- </div> -->
-                <!-- <div class="bot-message"> -->
-                <!--     <P>Hi, I'm Alice, your personal assistant. I can help you with a lot of things.</P> -->
-                <!--     <H size="2">Capibilities</H> -->
-                <!--     <ul> -->
-                <!--         <li>Search for information on the web.</li> -->
-                <!--         <li>Help you with your homework.</li> -->
-                <!--         <li>Write stories.</li> -->
-                <!--         <li>Help you with your workout plan.</li> -->
-                <!--         <li>Write code.</li> -->
-                <!--     </ul> -->
-                <!--     <H size="2">Examples</H> -->
-                <!--     <ul> -->
-                <!--         <li>Create a workout plan.</li> -->
-                <!--         <li>Help me with my math homework.</li> -->
-                <!--         <li>Write a story about a dragon.</li> -->
-                <!--         <li>Write a program that prints "Hello, World!".</li> -->
-                <!--     </ul> -->
-                <!-- </div> -->
-            </div>
-            <div class="bottom-bar">
-                <ConnectionIndicator bind:status />
-                <TextInput name="userMessage" placeholder="Chat with Alice." />
-                <Button onclick={send}>Send</Button>
-            </div>
+    <div class="chat-box">
+        <div class="history">
+            {#each history.messages as message}
+                {#if message.author === "user"}
+                    <div class="user-message">
+                        <P>{message.content}</P>
+                    </div>
+                {:else}
+                    <div class="bot-message">
+                        {@html message.html}
+                    </div>
+                {/if}
+            {/each}
+        </div>
+        <div class="bottom-bar">
+            <ConnectionIndicator bind:status />
+            <TextInput name="userMessage" placeholder="Chat with Alice." />
+            <Button onclick={send}>Send</Button>
         </div>
     </div>
 </main>
@@ -137,19 +114,19 @@
         display: flex;
         height: 100svh;
         flex-direction: row;
-    }
-
-    .chat-section {
-        display: flex;
-        flex-grow: 1;
-        height: 100%;
         justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 
     .chat-box {
         display: flex;
+        flex-grow: 1;
+        height: 100%;
+        max-width: 1600px;
+        min-width: 800px;
         flex-direction: column;
-        width: max(500px, 50%);
+        justify-content: space-between;
     }
 
     .history {
@@ -174,18 +151,15 @@
 
     .bottom-bar {
         display: flex;
-        float: bottom;
-        justify-content: center;
+        width: 100%;
         align-items: center;
-        padding-top: 1rem;
+        justify-content: space-between;
+        padding: 1rem 0 1rem 0;
     }
 
     .bottom-bar :global(input) {
         width: 100%;
-        min-width: max(500px, 50%);
-    }
-
-    .bottom-bar :global(button) {
-        margin: 0 1rem 0 1rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 </style>
