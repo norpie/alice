@@ -43,6 +43,18 @@
           export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
           export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS
         '';
+
+        XDG_DATA_DIRS = let
+          base = pkgs.lib.concatMapStringsSep ":" (x: "${x}/share") [
+            pkgs.gnome.adwaita-icon-theme
+            pkgs.shared-mime-info
+          ];
+          gsettings_schema = pkgs.lib.concatMapStringsSep ":" (x: "${x}/share/gsettings-schemas/${x.name}") [
+            pkgs.glib
+            pkgs.gsettings-desktop-schemas
+            pkgs.gtk3
+          ];
+        in "${base}:${gsettings_schema}";
       };
     });
 }
