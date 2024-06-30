@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button} from '../lib';
-let open = $state(true);
+    let open = $state(false);
 
     function toggleOpen() {
         open = !open;
