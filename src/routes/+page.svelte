@@ -149,7 +149,7 @@
             black calc(100% - 30px),
             transparent 100%
         );
-        padding: 0 3rem 3rem 3rem;
+        padding: 4rem;
     }
 
     .history::-webkit-scrollbar {
