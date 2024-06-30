@@ -30,7 +30,6 @@
         background-color: var(--color-action);
         color: var(--color-primary);
         cursor: pointer;
-        margin-bottom: 0.5rem;
         border-radius: 0.25rem;
         padding: 0.5rem 1rem;
         font-size: 1rem;
