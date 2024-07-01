@@ -16,9 +16,9 @@ use crate::responses::SimpleResult;
 
 mod calls;
 mod chat;
+mod prompt;
 mod responses;
 mod sockets;
-mod prompt;
 
 static API_URL: &str = "ws://localhost:8081";
 
@@ -101,7 +101,11 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![ping, check_connection, complete_history])
+        .invoke_handler(tauri::generate_handler![
+            ping,
+            check_connection,
+            complete_history
+        ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
     MANAGER
@@ -117,18 +121,12 @@ async fn main() -> Result<()> {
 async fn autorestart() {
     emit_connection_status(ConnectionStatus::Disconnected);
     loop {
-        tokio::time::sleep(std::time::Duration::from_secs(3)).await;
         let mut manager = MANAGER
             .get()
             .ok_or_else(|| anyhow::anyhow!("Failed to get manager"))
             .unwrap()
             .lock()
             .await;
-        if let Some(last_ping) = manager.last_ping {
-            if last_ping + std::time::Duration::from_secs(3) > std::time::Instant::now() {
-                continue;
-            }
-        }
         match manager.status {
             sockets::ConnectionStatus::Disconnected => {
                 let res = manager.connect().await;
@@ -142,6 +140,11 @@ async fn autorestart() {
                     manager.status = sockets::ConnectionStatus::Disconnected;
                     emit_connection_status(ConnectionStatus::Lost);
                 }
+            }
+        }
+        if let Some(last_ping) = manager.last_ping {
+            if last_ping + std::time::Duration::from_secs(3) < std::time::Instant::now() {
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
             }
         }
     }
