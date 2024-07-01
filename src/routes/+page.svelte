@@ -15,7 +15,6 @@
     } = $props()
 
     let status = $state(data.status);
-    status = data.status;
 
     interface CompletionTokens {
         tokens: string
