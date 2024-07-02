@@ -4,8 +4,9 @@
     import { listen } from '@tauri-apps/api/event';
     import Sidebar from '../components/Sidebar.svelte';
     import ConnectionIndicator from '../components/ConnectionIndicator.svelte';
-
+    import hljs from 'highlight.js';
     import showdown from 'showdown';
+
     let converter = new showdown.Converter();
 
     const { data }: {
@@ -38,7 +39,7 @@
         let now = Date.now();
         let diff = now - lastCompletionTimestamp;
         if (diff > 10 || lastCompletionTimestamp === 0) {
-            html = converter.makeHtml(content);
+            html = markdownToHtml(content);
             lastCompletionTimestamp = now;
         }
         history.messages.push({
@@ -48,6 +49,24 @@
             timestamp: new Date()
         });
     });
+
+    function markdownToHtml(markdown: string): string {
+        return highlightHtml(converter.makeHtml(markdown));
+    }
+
+    function highlightHtml(html: string): string {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+        let inlines = doc.querySelectorAll("p > code");
+        inlines.forEach((inline) => {
+            hljs.highlightBlock(inline as HTMLElement);
+        });
+        let blocks = doc.querySelectorAll("pre code");
+        blocks.forEach((block) => {
+            hljs.highlightBlock(block as HTMLElement);
+        });
+        return doc.body.innerHTML;
+    }
 
     async function send() {
         let inputElement = document.querySelector('textarea[name="userMessage"]') as HTMLInputElement;
@@ -65,7 +84,7 @@
             completion = "I'm sorry, I can't do that right now.: " + error + ".";
         }
         history.messages.pop();
-        history.messages.push({ author: "bot", content: completion, html: converter.makeHtml(completion), timestamp: new Date()});
+        history.messages.push({ author: "bot", content: completion, html: markdownToHtml(completion), timestamp: new Date()});
     }
 
     interface Message {
@@ -122,8 +141,8 @@
         display: flex;
         height: 100svh;
         flex-direction: row;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         width: 100%;
     }
 
