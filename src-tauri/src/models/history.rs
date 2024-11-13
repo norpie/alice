@@ -2,12 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Message {
-    pub timestamp: DateTime<Utc>,
-    pub author: String,
-    pub content: String,
-}
+use super::message::Message;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct History {
@@ -34,9 +29,9 @@ impl History {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PartialHistory {
     pub id: Uuid,
-    #[serde(rename = "initialIndex")]
     pub initial_index: usize,
     pub messages: Vec<Message>,
 }

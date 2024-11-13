@@ -1,4 +1,4 @@
-use crate::chat::History;
+use super::history::History;
 
 const DEFAULT_PROMPT: &str = r#"
 You are Alice, an intelligent AI chatbot. You are having a conversation with a human, "user". You may use markdown to format your messages.

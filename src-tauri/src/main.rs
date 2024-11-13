@@ -1,24 +1,24 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+//Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::OnceLock;
 
 use anyhow::Result;
-use chat::PartialHistory;
-use prompt::chat_prompt;
 use responses::Response;
+use models::history::PartialHistory;
+use models::prompt::chat_prompt;
 use serde::Serialize;
 use sockets::UllmAPI;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter};
 use tokio::sync::Mutex;
 
 use crate::responses::SimpleResult;
 
 mod calls;
-mod chat;
-mod prompt;
+mod models;
 mod responses;
 mod sockets;
+mod wpp;
 
 static API_URL: &str = "ws://localhost:8081";
 
@@ -26,14 +26,11 @@ static MANAGER: OnceLock<Mutex<UllmAPI>> = OnceLock::new();
 static APP: OnceLock<AppHandle> = OnceLock::new();
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "lowercase")]
 enum ConnectionStatus {
-    #[serde(rename = "connected")]
     Connected,
-    #[serde(rename = "disconnected")]
     Disconnected,
-    #[serde(rename = "lost")]
     Lost,
-    #[serde(rename = "reconnected")]
     Reconnected,
 }
 
