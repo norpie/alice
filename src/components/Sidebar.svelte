@@ -1,36 +1,21 @@
 <script lang="ts">
-    import { Button} from '../lib';
-    let open = $state(false);
-
-    function toggleOpen() {
-        open = !open;
-    }
+    import Logo from './Logo.svelte';
 </script>
 
-<aside class={open ? 'open' : ''}>
+<aside>
     <div class="handle">
-        <Button onclick={toggleOpen}>
-            {#if open}
-                ≪
-            {:else}
-                ≫
-            {/if}
-        </Button>
+        <Logo/>
     </div>
-
-    <ul>
-        <li>Home</li>
-    </ul>
 </aside>
-
 
 <style>
     aside {
-        width: 300px;
+        z-index: 1000;
+        width: 28rem;
         height: 100vh;
         background: var(--color-accent);
         position: fixed;
-        left: -300px;
+        left: -28rem;
 
         color: var(--color-primary);
 
@@ -41,23 +26,15 @@
         transition: left 0.5s;
     }
 
-    aside.open {
+    aside:hover {
         left: 0;
     }
 
-    aside ul {
-        padding-inline-start: 0;
-    }
-
-    aside ul li {
-        list-style: none;
-        font-size: 18px;
-        padding: 20px 0;
-        cursor: pointer;
-    }
-
-    .handle {
-        position: relative;
-        left: 100%;
+    aside .handle {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 4rem;
+        height: 100vh;
     }
 </style>
