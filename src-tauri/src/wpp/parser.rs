@@ -92,7 +92,7 @@ fn parse_attribute_values(
     } else {
         return Err("Expected `(`".to_string());
     }
-    while let Some(token) = tokens.next() {
+    for token in tokens.by_ref() {
         match token {
             Token::StringLiteral(value) => {
                 values.push(value.clone());

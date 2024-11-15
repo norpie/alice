@@ -29,7 +29,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
             '+' => tokens.push(Token::Plus),
             '"' => {
                 let mut literal = String::new();
-                while let Some(c) = chars.next() {
+                for c in chars.by_ref() {
                     if c == '"' {
                         break;
                     }
