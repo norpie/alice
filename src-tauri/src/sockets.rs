@@ -6,7 +6,8 @@ use tokio_tungstenite::{tungstenite::Message, MaybeTlsStream, WebSocketStream};
 
 use crate::{
     calls::{CompletionParams, LoadParams, MethodCall},
-    responses::{CompletionResult, ListResult, Response, SimpleResult, Status},
+    models::parameters::EngineParameters,
+    responses::{CompletionResult, ListResult, Response, SimpleResult, CompletionStatus},
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -71,19 +72,26 @@ impl UllmAPI {
         loop {
             if let Some(response) = self.stream.as_mut().unwrap().next().await {
                 // Wait for the response
+                dbg!(&response);
                 match response {
                     Ok(msg) => match msg {
                         Message::Text(txt) => {
                             // Parse the JSON response
                             self.last_ping = Some(std::time::Instant::now());
                             return serde_json::from_str(&txt).map_err(|e| anyhow::anyhow!(e));
-                        },
+                        }
                         Message::Close(close) => {
                             anyhow::bail!("Connection closed: {:?}", close);
-                        },
+                        }
                         Message::Ping(ping) => {
-                            self.stream.as_mut().unwrap().send(Message::Pong(ping)).await.map_err(|e| anyhow::anyhow!(e))?;
-                        },
+                            let res = self
+                                .stream
+                                .as_mut()
+                                .unwrap()
+                                .send(Message::Pong(ping))
+                                .await;
+                            res.map_err(|e| anyhow::anyhow!(e))?;
+                        }
                         _ => anyhow::bail!("Unexpected message type, {:?}", msg),
                     },
                     Err(e) => anyhow::bail!(e),
@@ -141,10 +149,15 @@ impl UllmAPI {
         snippet: String,
         callback: Fun,
     ) -> Result<String> {
+        let mut parameters = EngineParameters::default();
+        parameters.stop_sequences.push("user:".to_string());
         let call = MethodCall {
             id: uuid::Uuid::new_v4(),
             method: "complete".to_string(),
-            params: Some(CompletionParams { snippet }),
+            params: Some(CompletionParams {
+                snippet,
+                engine_parameters: parameters,
+            }),
         };
 
         // Convert the message to a JSON string
@@ -168,21 +181,25 @@ impl UllmAPI {
                         let response: Response<CompletionResult> =
                             serde_json::from_str(&txt).map_err(|e| anyhow::anyhow!(e))?;
                         match response.result.status {
-                            Status::Ongoing => {
+                            CompletionStatus::Ongoing => {
                                 callback(response.result.tokens).await;
                             }
-                            Status::Final => {
+                            CompletionStatus::Final => {
                                 return Ok(response.result.tokens);
                             }
                             _ => anyhow::bail!("Unexpected status"),
                         }
-                    },
+                    }
                     Message::Close(close) => {
                         anyhow::bail!("Connection closed: {:?}", close);
-                    },
+                    }
                     Message::Ping(ping) => {
-                        self.stream.as_mut().unwrap().send(Message::Pong(ping)).await?;
-                    },
+                        self.stream
+                            .as_mut()
+                            .unwrap()
+                            .send(Message::Pong(ping))
+                            .await?;
+                    }
                     _ => anyhow::bail!("Unexpected message type, {:?}", msg),
                 },
                 Err(e) => anyhow::bail!(e),
