@@ -11,11 +11,11 @@
 
     const { data }: {
         data: {
-            status: 'connected' | 'disconnected' | 'reconnected' | 'lost';
+            alive: boolean,
         };
     } = $props()
 
-    let status = $state(data.status);
+    let connected = $state(data.alive);
 
     interface CompletionTokens {
         tokens: string
@@ -129,7 +129,7 @@
             {/each}
         </div>
         <div class="bottom-bar">
-            <ConnectionIndicator bind:status />
+            <ConnectionIndicator bind:connected />
             <Textarea rows="1" name="userMessage" placeholder="Chat with Alice." />
             <Button onclick={send}>Send</Button>
         </div>

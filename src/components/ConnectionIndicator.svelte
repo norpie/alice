@@ -2,36 +2,23 @@
     import { listen } from '@tauri-apps/api/event';
     import { invoke } from "@tauri-apps/api/core";
 
-    interface ConnectionStatus {
-        status: 'connected' | 'disconnected' | 'reconnected' | 'lost';
-    }
-
-    listen<ConnectionStatus>('connection-status', (event) => {
-        if (!event.payload || !event.payload.status) {
-            return;
-        }
-        let payload = event.payload;
-        switch (payload.status) {
-            case 'lost':
-                status = 'disconnected'
-                break;
-            case 'reconnected':
-                status = 'connected'
-                break;
-        }
+    listen<boolean>('connection_status', (event) => {
+        connected = event.payload;
+        console.log("Connection status updated: " + connected);
     });
 
     async function refresh() {
-        status = await invoke("check_connection");
+        connected = await invoke("connection_status");
     }
 
-    let { status = $bindable() }: {
-        status: string
+    let { connected = $bindable() }: {
+        connected: boolean;
         } = $props();
 </script>
 
 <button
-    class={status}
+    aria-label="Connection status indicator"
+    class={connected ? "" : "disconnected"}
     onclick={refresh}>
 </button>
 
