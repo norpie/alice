@@ -24,12 +24,40 @@ impl ClientSocket {
         let Some(stream) = self.stream.as_mut() else {
             return Err(AliceError::NoStream);
         };
-        stream.close(None).await?;
+        let _ = stream.close(None).await;
+        self.stream = None;
         Ok(())
     }
 
     pub async fn is_connected(&self) -> bool {
         self.stream.is_some()
+    }
+
+    pub async fn send_ping(&mut self) -> Result<()> {
+        let Some(stream) = self.stream.as_mut() else {
+            return Err(AliceError::NoStream);
+        };
+        Ok(stream.send(Message::Ping(vec![0])).await?)
+    }
+
+    pub async fn receive_pong(&mut self) -> Result<()> {
+        let Some(stream) = self.stream.as_mut() else {
+            return Err(AliceError::NoStream);
+        };
+        while let Some(response) = stream.next().await {
+            let Ok(response) = response else {
+                return Err(AliceError::ResponseError);
+            };
+            match response {
+                Message::Pong(_) => return Ok(()),
+                Message::Close(_) => {
+                    self.stream = None;
+                    break;
+                }
+                _ => {}
+            }
+        }
+        Ok(())
     }
 
     pub async fn send_str(&mut self, str: String) -> Result<()> {
@@ -83,6 +111,7 @@ impl ClientSocket {
                 Message::Ping(ping) => {
                     stream.send(Message::Pong(ping)).await?;
                 }
+                Message::Pong(_) => {}
                 Message::Close(_) => {
                     self.stream = None;
                     break;
