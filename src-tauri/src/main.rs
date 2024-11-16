@@ -33,7 +33,7 @@ macro_rules! api {
 }
 
 mod api;
-pub mod commands;
+mod commands;
 mod events;
 mod models;
 mod prelude;
