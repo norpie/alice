@@ -9,6 +9,10 @@ pub enum AliceError {
     #[error("Serde error: {0}")]
     Serde(#[from] serde_json::Error),
 
+    // Tauri
+    #[error("Tauri error: {0}")]
+    Tauri(#[from] tauri::Error),
+
     // OnceLock
     #[error("OnceLock is empty")]
     OnceLockEmpty,
