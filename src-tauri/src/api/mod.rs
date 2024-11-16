@@ -13,7 +13,7 @@ pub trait Api: Send + Sync {
     async fn connect(&mut self) -> Result<()>;
     async fn disconnect(&mut self) -> Result<()>;
 
-    async fn keep_alive(&mut self) -> Result<()>;
+    async fn is_alive(&mut self) -> Result<bool>;
 
     async fn load(&mut self, model: &Model) -> Result<()>;
     async fn unload(&mut self) -> Result<()>;

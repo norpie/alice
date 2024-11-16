@@ -36,8 +36,14 @@ impl Api for UllmApi {
         self.client.disconnect().await
     }
 
-    async fn keep_alive(&mut self) -> Result<()> {
-        self.client.return_single().await
+    async fn is_alive(&mut self) -> Result<bool> {
+        let result = self.client.send_ping().await;
+        if result.is_err() {
+            let _ = self.client.disconnect().await;
+            return Ok(false);
+        }
+        let _ = self.client.receive_pong().await?;
+        Ok(true)
     }
 
     async fn load(&mut self, model: &Model) -> Result<()> {
