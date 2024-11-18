@@ -1,28 +1,20 @@
 <script lang="ts">
-    import { P, Button, Textarea } from '../lib';
-    import { invoke } from '@tauri-apps/api/core';
-    import { listen } from '@tauri-apps/api/event';
-    import Sidebar from '../components/Sidebar.svelte';
-    import ConnectionIndicator from '../components/ConnectionIndicator.svelte';
-    import hljs from 'highlight.js';
-    import showdown from 'showdown';
+    import { P, Button, Textarea } from "../lib";
+    import { invoke } from "@tauri-apps/api/core";
+    import { listen } from "@tauri-apps/api/event";
+    import Sidebar from "../components/Sidebar.svelte";
+    import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
+    import hljs from "highlight.js";
+    import showdown from "showdown";
 
     let converter = new showdown.Converter();
 
-    const { data }: {
-        data: {
-            alive: boolean,
-        };
-    } = $props()
-
-    let connected = $state(data.alive);
-
     interface CompletionTokens {
-        tokens: string
+        tokens: string;
     }
 
     let lastCompletionTimestamp = 0;
-    listen<CompletionTokens>('completion-tokens', async (event) => {
+    listen<CompletionTokens>("completion-tokens", async (event) => {
         if (!event.payload || !event.payload.tokens) {
             return;
         }
@@ -46,7 +38,7 @@
             author: "bot",
             content,
             html,
-            timestamp: new Date()
+            timestamp: new Date(),
         });
     });
 
@@ -69,47 +61,71 @@
     }
 
     async function send() {
-        let inputElement = document.querySelector('textarea[name="userMessage"]') as HTMLInputElement;
+        let inputElement = document.querySelector(
+            'textarea[name="userMessage"]',
+        ) as HTMLInputElement;
         if (!inputElement) return;
         let message = inputElement.value;
         if (!message) return;
-        history.messages.push({ author: "user", content: message, html: converter.makeHtml(message), timestamp: new Date()});
-        inputElement.value = '';
+        history.messages.push({
+            author: "user",
+            content: message,
+            html: converter.makeHtml(message),
+            timestamp: new Date(),
+        });
+        inputElement.value = "";
         let completion = "";
         try {
-            let future: Promise<string> = invoke("complete_history", { history });
-            history.messages.push({ author: "bot", content: "...", html: converter.makeHtml("..."),timestamp: new Date()});
+            let future: Promise<string> = invoke("complete_history", {
+                history,
+            });
+            history.messages.push({
+                author: "bot",
+                content: "...",
+                html: converter.makeHtml("..."),
+                timestamp: new Date(),
+            });
             completion = await future;
         } catch (error) {
-            completion = "I'm sorry, I can't do that right now.: " + error + ".";
+            completion =
+                "I'm sorry, I can't do that right now.: " + error + ".";
         }
         history.messages.pop();
-        history.messages.push({ author: "bot", content: completion, html: markdownToHtml(completion), timestamp: new Date()});
+        history.messages.push({
+            author: "bot",
+            content: completion,
+            html: markdownToHtml(completion),
+            timestamp: new Date(),
+        });
     }
 
     interface Message {
-        author: 'user' | 'bot',
-        content: string,
-        html: string,
-        timestamp: Date
+        author: "user" | "bot";
+        content: string;
+        html: string;
+        timestamp: Date;
     }
 
     interface History {
-        id: string,
-        messages: Message[],
-        initialIndex: number
+        id: string;
+        messages: Message[];
+        initialIndex: number;
     }
 
-    const initialContent = "Hi, I'm Alice, your personal assistant. I can help you with a lot of things.\n## Capibilities\n- Search for information on the web.\n- Help you with your homework.\n- Write stories.\n- Help you with your workout plan.\n- Write code.\n## Examples\n- Create a workout plan.\n- Help me with my math homework.\n- Write a story about a dragon.\n- Write a program that prints \"Hello, World!\".";
+    const initialContent =
+        'Hi, I\'m Alice, your personal assistant. I can help you with a lot of things.\n## Capibilities\n- Search for information on the web.\n- Help you with your homework.\n- Write stories.\n- Help you with your workout plan.\n- Write code.\n## Examples\n- Create a workout plan.\n- Help me with my math homework.\n- Write a story about a dragon.\n- Write a program that prints "Hello, World!".';
     let history: History = $state({
         id: "46695d58-a0d0-4e26-a457-f210bbb1106f",
         initialIndex: 0,
-        messages: [{
-            author: "bot",
-            content: initialContent,
-            html: converter.makeHtml(initialContent),
-            timestamp: new Date()
-        }]});
+        messages: [
+            {
+                author: "bot",
+                content: initialContent,
+                html: converter.makeHtml(initialContent),
+                timestamp: new Date(),
+            },
+        ],
+    });
 </script>
 
 <Sidebar />
@@ -129,8 +145,12 @@
             {/each}
         </div>
         <div class="bottom-bar">
-            <ConnectionIndicator bind:connected />
-            <Textarea rows="1" name="userMessage" placeholder="Chat with Alice." />
+            <ConnectionIndicator />
+            <Textarea
+                rows="1"
+                name="userMessage"
+                placeholder="Chat with Alice."
+            />
             <Button onclick={send}>Send</Button>
         </div>
     </div>
