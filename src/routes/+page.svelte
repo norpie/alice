@@ -4,10 +4,7 @@
     import { listen } from "@tauri-apps/api/event";
     import Sidebar from "../components/Sidebar.svelte";
     import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
-    import hljs from "highlight.js";
-    import showdown from "showdown";
-
-    let converter = new showdown.Converter();
+    import { toHighlightedHtml, toHtml } from "../lib/markdown";
 
     interface CompletionTokens {
         tokens: string;
@@ -31,7 +28,7 @@
         let now = Date.now();
         let diff = now - lastCompletionTimestamp;
         if (diff > 10 || lastCompletionTimestamp === 0) {
-            html = markdownToHtml(content);
+            html = toHighlightedHtml(content);
             lastCompletionTimestamp = now;
         }
         history.messages.push({
@@ -41,24 +38,6 @@
             timestamp: new Date(),
         });
     });
-
-    function markdownToHtml(markdown: string): string {
-        return highlightHtml(converter.makeHtml(markdown));
-    }
-
-    function highlightHtml(html: string): string {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(html, "text/html");
-        let inlines = doc.querySelectorAll("p > code");
-        inlines.forEach((inline) => {
-            hljs.highlightBlock(inline as HTMLElement);
-        });
-        let blocks = doc.querySelectorAll("pre code");
-        blocks.forEach((block) => {
-            hljs.highlightBlock(block as HTMLElement);
-        });
-        return doc.body.innerHTML;
-    }
 
     async function send() {
         let inputElement = document.querySelector(
@@ -70,7 +49,7 @@
         history.messages.push({
             author: "user",
             content: message,
-            html: converter.makeHtml(message),
+            html: toHtml(message),
             timestamp: new Date(),
         });
         inputElement.value = "";
@@ -82,7 +61,7 @@
             history.messages.push({
                 author: "bot",
                 content: "...",
-                html: converter.makeHtml("..."),
+                html: toHtml("..."),
                 timestamp: new Date(),
             });
             completion = await future;
@@ -94,7 +73,7 @@
         history.messages.push({
             author: "bot",
             content: completion,
-            html: markdownToHtml(completion),
+            html: toHighlightedHtml(completion),
             timestamp: new Date(),
         });
     }
@@ -121,7 +100,7 @@
             {
                 author: "bot",
                 content: initialContent,
-                html: converter.makeHtml(initialContent),
+                html: toHtml(initialContent),
                 timestamp: new Date(),
             },
         ],
