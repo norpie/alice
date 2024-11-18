@@ -36,7 +36,7 @@ in
             ${harfbuzz.dev}/lib/pkgconfig";
     XDG_DATA_DIRS = let
       base = pkgs.lib.concatMapStringsSep ":" (x: "${x}/share") [
-        pkgs.gnome.adwaita-icon-theme
+        pkgs.adwaita-icon-theme
         pkgs.shared-mime-info
       ];
       gsettings_schema = pkgs.lib.concatMapStringsSep ":" (x: "${x}/share/gsettings-schemas/${x.name}") [
