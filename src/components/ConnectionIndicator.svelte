@@ -21,6 +21,13 @@
             return "disconnected";
         }
     }
+
+    // If the connection status is unknown for too long, refresh it
+    setTimeout(function () {
+        if (connected === null) {
+            refresh();
+        }
+    }, 1000);
 </script>
 
 <button
