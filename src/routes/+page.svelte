@@ -5,6 +5,9 @@
     import Sidebar from "../components/Sidebar.svelte";
     import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
     import { toHighlightedHtml, toHtml } from "../lib/markdown";
+    import { resetMode, setMode } from "mode-watcher";
+
+    setMode("dark");
 
     interface CompletionTokens {
         tokens: string;
