@@ -14,9 +14,8 @@
     let showNavClass = $derived(showNav ? defaultClass + " -translate-y-[50%]" : defaultClass + " translate-y-0");
 </script>
 
-<!-- <div class="flex flex-row max-h-[4rem]"> -->
-{#if !showNav}
-    <div class="flex flex-row p-4">
+<div class={showNavClass}>
+    <div class="flex flex-row justify-between pb-8">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -52,7 +51,5 @@
             /></svg
         >
     </div>
-{/if}
-
-<!-- </div> -->
-
+    <ModelSelector />
+</div>
