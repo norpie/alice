@@ -1,13 +1,16 @@
 <script lang="ts">
     import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+    import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
 
     import placeholder from "$lib/placeholder";
     let chats = placeholder.chats;
 
     let {
         showNav = $bindable(),
+        connection = $bindable(),
     }: {
         showNav: boolean;
+        connection: boolean | null;
     } = $props();
 
     let default_class =
@@ -22,9 +25,9 @@
     <div class="flex justify-between items-center p-4">
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
@@ -32,11 +35,11 @@
             stroke-linejoin="round"
             class="lucide lucide-panel-right-open"
             onclick={() => (showNav = !showNav)}
-            ><rect width="21" height="21" x="3" y="3" rx="2" /><path
+            ><rect width="18" height="18" x="3" y="3" rx="2" /><path
                 d="M15 3v18"
             /><path d="m10 15-3-3 3-3" /></svg
         >
-
+        <ConnectionIndicator bind:connection />
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

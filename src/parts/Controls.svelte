@@ -1,9 +1,17 @@
 <script lang="ts">
+    import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
+    import ModelSelector from "../components/ModelSelector.svelte";
     let {
         showNav = $bindable(),
+        connection = $bindable(),
     }: {
         showNav: boolean;
+        connection: boolean | null;
     } = $props();
+
+    let defaultClass =
+        "flex flex-col max-w-[260px] p-4 transition-all duration-300";
+    let showNavClass = $derived(showNav ? defaultClass + " -translate-y-[50%]" : defaultClass + " translate-y-0");
 </script>
 
 <!-- <div class="flex flex-row max-h-[4rem]"> -->
@@ -11,9 +19,9 @@
     <div class="flex flex-row p-4">
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
@@ -21,10 +29,11 @@
             stroke-linejoin="round"
             class="lucide lucide-panel-right-close"
             onclick={() => (showNav = !showNav)}
-            ><rect width="21" height="21" x="3" y="3" rx="2" /><path
+            ><rect width="18" height="18" x="3" y="3" rx="2" /><path
                 d="M15 3v18"
             /><path d="m8 9 3 3-3 3" /></svg
         >
+        <ConnectionIndicator bind:connection />
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -47,12 +56,3 @@
 
 <!-- </div> -->
 
-<style>
-    .shift-transition {
-        transition:
-            left 0.3s,
-            width 0.3s,
-            height 0.3s,
-            top 0.3s;
-    }
-</style>
