@@ -3,19 +3,64 @@
 
     import placeholder from "$lib/placeholder";
     let chats = placeholder.chats;
+
+    let {
+        showNav = $bindable(),
+    }: {
+        showNav: boolean;
+    } = $props();
+
+    let default_class =
+        "relative flex flex-col h-screen bg-gray-800 text-white max-w-[260px] overflow-hidden transition-width duration-300 ease-in-out";
+    let active_class = $derived(
+        showNav ? default_class + " w-[260px]" : default_class + " w-0",
+    );
 </script>
 
-<nav class="flex flex-col h-screen bg-gray-800 text-white max-w-[260px]">
+<!-- Animate the slide-in effect -->
+<nav class={active_class}>
     <div class="flex justify-between items-center p-4">
-        <button class="text-white">Toggle Sidebar</button>
-        <button class="text-white">New Chat</button>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-panel-right-open"
+            onclick={() => (showNav = !showNav)}
+            ><rect width="21" height="21" x="3" y="3" rx="2" /><path
+                d="M15 3v18"
+            /><path d="m10 15-3-3 3-3" /></svg
+        >
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-square-pen"
+            ><path
+                d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            /><path
+                d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"
+            /></svg
+        >
     </div>
-    <ScrollArea class="p-4">
+    <ScrollArea class="p-4 text-nowrap">
         {#each chats as chat}
-            <div class="date-group pb-4">
-                <p2 class="font-bold text-white p-2">
+            <div class="date-group pb-2">
+                <p class="font-bold text-white p-2">
                     {chat.date_group}
-                </p2> <br />
+                </p>
                 <div class="flex flex-col">
                     {#each chat.conversations as conv}
                         <div
