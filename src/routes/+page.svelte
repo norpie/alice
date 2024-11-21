@@ -4,6 +4,7 @@
 
     import Nav from "../parts/Nav.svelte";
     import Controls from "../parts/Controls.svelte";
+    import Input from "../parts/Input.svelte";
 
     let model: { id: string; name: string } | null = $state(null);
     let showNav: boolean = $state(true);
@@ -12,9 +13,9 @@
 
 <div class="flex flex-row h-screen">
     <Nav bind:showNav bind:connection />
-    <main class="flex flex-col flex-1">
+    <main class="flex flex-col flex-1 justify-between">
         <Controls bind:showNav bind:connection bind:model/>
         <div id="chat"></div>
-        <div id="input"></div>
+        <Input bind:model />
     </main>
 </div>
