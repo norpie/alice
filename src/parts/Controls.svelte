@@ -5,9 +5,11 @@
     let {
         showNav = $bindable(),
         connection = $bindable(),
+        model = $bindable(),
     }: {
         showNav: boolean;
         connection: boolean | null;
+        model: { id: string; name: string } | null;
     } = $props();
 
     let defaultClass =
@@ -37,5 +39,5 @@
             /></svg
         >
     </div>
-    <ModelSelector />
+    <ModelSelector bind:model />
 </div>
