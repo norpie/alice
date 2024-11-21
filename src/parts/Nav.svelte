@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+    import { ScrollArea } from "../lib/components/ui/scroll-area/index.js";
     import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
+    import NavButton from "../components/NavButton.svelte";
 
     import placeholder from "$lib/placeholder";
     let chats = placeholder.chats;
@@ -23,22 +24,7 @@
 <!-- Animate the slide-in effect -->
 <nav class={active_class}>
     <div class="flex justify-between items-center p-4">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-panel-right-open"
-            onclick={() => (showNav = !showNav)}
-            ><rect width="18" height="18" x="3" y="3" rx="2" /><path
-                d="M15 3v18"
-            /><path d="m10 15-3-3 3-3" /></svg
-        >
+        <NavButton bind:showNav />
         <ConnectionIndicator bind:connection />
         <svg
             xmlns="http://www.w3.org/2000/svg"

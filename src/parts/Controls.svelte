@@ -1,5 +1,6 @@
 <script lang="ts">
     import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
+    import NavButton from "../components/NavButton.svelte";
     import ModelSelector from "../components/ModelSelector.svelte";
     let {
         showNav = $bindable(),
@@ -16,22 +17,7 @@
 
 <div class={showNavClass}>
     <div class="flex flex-row justify-between pb-8">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-panel-right-close"
-            onclick={() => (showNav = !showNav)}
-            ><rect width="18" height="18" x="3" y="3" rx="2" /><path
-                d="M15 3v18"
-            /><path d="m8 9 3 3-3 3" /></svg
-        >
+        <NavButton bind:showNav />
         <ConnectionIndicator bind:connection />
         <svg
             xmlns="http://www.w3.org/2000/svg"
