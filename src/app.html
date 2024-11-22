@@ -1,115 +1,51 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-    <link rel="stylesheet" href="%sveltekit.assets%/dark.min.css" />
+    <!-- <link rel="stylesheet" href="%sveltekit.assets%/dark.min.css" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Alice</title>
     %sveltekit.head%
     <style>
-      @font-face {
-        font-family: "Inter Tight";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url("%sveltekit.assets%/InterTight-VariableFont_wght.ttf")
-          format("truetype");
-      }
+        @font-face {
+            font-family: 'Inter Tight';
+            font-style: normal;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url('%sveltekit.assets%/InterTight-VariableFont_wght.ttf')
+        }
 
-      @font-face {
-        font-family: "IBM Plex Mono";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url("%sveltekit.assets%/IBMPlexMono-Regular.ttf")
-          format("truetype");
-      }
+        @font-face {
+            font-family: 'IBM Plex Mono';
+            font-style: normal;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url('%sveltekit.assets%/IBMPlexMono-Regular.ttf')
+        }
 
-      * {
-        box-sizing: border-box;
-      }
+        html {
+            transition:
+                background-color 0.5s ease-in,
+                color 0.5s ease-in;
 
-      html {
-        background-color: var(--background);
-        color: var(--foreground);
-        font-family: var(--font-default);
-        font-size: 14px;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-text-size-adjust: 100%;
+        }
 
-        transition:
-          background-color 0.5s ease-in,
-          color 0.5s ease-in;
-
-        /* /* Selected Theme */ */
-        /* --color-background: var(--color-dark-background); */
-        /* --color-primary: var(--color-dark-primary); */
-        /* --color-secondary: var(--color-dark-secondary); */
-        /*        */
-        /* --color-action: var(--color-dark-action); */
-        /* --color-accent: var(--color-dark-accent); */
-        /* --color-disabled: var(--color-dark-disabled); */
-        /*        */
-        /* --color-fg-success: var(--color-dark-fg-success); */
-        /* --color-bg-success: var(--color-dark-bg-success); */
-        /* --color-fg-fail: var(--color-dark-fg-fail); */
-        /* --color-bg-fail: var(--color-dark-bg-fail); */
-        /*        */
-        /* --color-fg-warning: var(--color-dark-fg-warning); */
-        /* --color-bg-warning: var(--color-dark-bg-warning); */
-        /* --color-fg-info: var(--color-dark-fg-info); */
-        /* --color-bg-info: var(--color-dark-bg-info); */
-        /*        */
-        /* /* Dark Colors */ */
-        /* --color-dark-background: #343a40; */
-        /* --color-dark-primary: #f8f9fa; */
-        /* --color-dark-secondary: #ced4da; */
-        /*        */
-        /* --color-dark-action: #007bff; */
-        /* --color-dark-accent: #6c757d; */
-        /* --color-dark-disabled: #495057; */
-        /*        */
-        /* --color-dark-fg-success: #28a745; */
-        /* --color-dark-bg-success: #d4edda; */
-        /* --color-dark-fg-fail: #dc3545; */
-        /* --color-dark-bg-fail: #f8d7da; */
-        /*        */
-        /* --color-dark-fg-warning: #ffc107; */
-        /* --color-dark-bg-warning: #fff3cd; */
-        /* --color-dark-fg-info: #17a2b8; */
-        /* --color-dark-bg-info: #d1ecf1; */
-        /*        */
-        /* /* Light Colors */ */
-        /* --color-light-background: #f8f9fa; */
-        /* --color-light-primary: #343a40; */
-        /* --color-light-secondary: #495057; */
-        /*        */
-        /* --color-light-action: #007bff; */
-        /* --color-light-accent: #6c757d; */
-        /* --color-light-disabled: #ced4da; */
-        /*        */
-        /* --color-light-fg-success: #28a745; */
-        /* --color-light-bg-success: #d4edda; */
-        /* --color-light-fg-fail: #dc3545; */
-        /* --color-light-bg-fail: #f8d7da; */
-        /*        */
-        /* --color-light-fg-warning: #ffc107; */
-        /* --color-light-bg-warning: #fff3cd; */
-        /* --color-light-fg-info: #17a2b8; */
-        /* --color-light-bg-info: #d1ecf1; */
-
-        --font-default: "Inter Tight", sans-serif;
-        --font-mono: "IBM Plex Mono", monospace;
-        --font-weight: 400;
-        --font-weight-action: 600;
-      }
-
-      body {
-        margin: 0;
-        padding: 0;
-      }
+        body {
+            margin: 0;
+            padding: 0;
+        }
     </style>
-  </head>
-  <body data-sveltekit-preload-data="hover">
+</head>
+
+<body data-sveltekit-preload-data="hover">
     <div style="display: contents">%sveltekit.body%</div>
-  </body>
+</body>
+
 </html>
