@@ -5,7 +5,7 @@ import { highlightHtml } from "./code";
 let converter = new showdown.Converter();
 
 function toHtml(markdown: string): string {
-    converter.makeHtml(markdown)
+    return converter.makeHtml(markdown)
 }
 
 function toHighlightedHtml(markdown: string): string {
