@@ -4,6 +4,7 @@
 
     import Nav from "../parts/Nav.svelte";
     import Controls from "../parts/Controls.svelte";
+    import Chat from "../parts/Chat.svelte";
     import Input from "../parts/Input.svelte";
 
     let model: { id: string; name: string } | null = $state(null);
@@ -15,7 +16,7 @@
     <Nav bind:showNav bind:connection />
     <main class="flex flex-col flex-1 justify-between">
         <Controls bind:showNav bind:connection bind:model/>
-        <div id="chat"></div>
+        <Chat />
         <Input bind:model />
     </main>
 </div>
