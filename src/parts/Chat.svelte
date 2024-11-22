@@ -106,10 +106,7 @@
                     {#if typeof chunk === "string"}
                         {@html chunk}
                     {:else}
-                        <CodeBlock
-                            language={chunk[0]}
-                            code={chunk[1]}
-                        />
+                        <CodeBlock language={chunk[0]} code={chunk[1]} />
                     {/if}
                 {/each}
             </div>
@@ -121,7 +118,8 @@
 </div>
 
 <style>
-    /* :global(pre code span) { */
-    /*     font-family: "IBM Plex Mono", monospace; */
-    /* } */
+    :global(.code-block-language) {
+        font-weight: 400;
+        letter-spacing: 0.08em;
+    }
 </style>
