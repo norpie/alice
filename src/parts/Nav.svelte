@@ -3,7 +3,7 @@
     import ConnectionIndicator from "../components/ConnectionIndicator.svelte";
     import NavButton from "../components/NavButton.svelte";
 
-    import placeholder from "$lib/placeholder";
+    import placeholder from "../lib/placeholder";
     let chats = placeholder.chats;
 
     let {
@@ -73,35 +73,3 @@
         {/each}
     </ScrollArea>
 </nav>
-
-<style>
-    @tailwind utilities;
-
-    @layer utilities {
-        .fade-out-mask {
-            -webkit-mask-image: linear-gradient(
-                to right,
-                black 90%,
-                transparent 100%
-            );
-            mask-image: linear-gradient(to right, black 90%, transparent 100%);
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-        }
-
-        .fade-out-mask-earlier {
-            -webkit-mask-image: linear-gradient(
-                to right,
-                black 80%,
-                transparent 90%
-            );
-            mask-image: linear-gradient(to right, black 83%, transparent 93%);
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-        }
-    }
-</style>
