@@ -127,4 +127,17 @@ let chats = [
   },
 ];
 
-export default { chats };
+const conversation = [
+  {
+    role: "user",
+    message:
+      "How do you make an async trait in Rust and implement it for a struct?",
+  },
+  {
+    role: "assistant",
+    message:
+      "You can make an async trait in Rust by using the async_trait crate. Here's an example:\n\n```rust\nuse async_trait::async_trait;\n\n#[async_trait]\ntrait MyTrait {\n    async fn my_method(&self);\n}\n```\n\nYou can then implement this trait for a struct like this:\n\n```rust\nstruct MyStruct;\n\n#[async_trait]\nimpl MyTrait for MyStruct {\n    async fn my_method(&self) {\n        // Your implementation here\n    }\n}\n```",
+  },
+];
+
+export default { chats, conversation };
