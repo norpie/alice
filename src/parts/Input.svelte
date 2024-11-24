@@ -1,11 +1,36 @@
 <script lang="ts">
     import { Input } from "$lib/components/ui/input/index.js";
+    import { toast } from "svelte-sonner";
 
     let {
         model = $bindable(),
     }: {
         model: { id: string; name: string } | null;
     } = $props();
+
+    let content = $state("");
+
+    onkeydown = (event: KeyboardEvent) => {
+        if (event.key !== "Enter") {
+            return;
+        }
+        // Check if any modifier keys are pressed
+        if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
+            return;
+        }
+        submit();
+    };
+
+    function submit() {
+        if (!model) {
+            toast.error("No model selected");
+            return;
+        }
+        if (!content || content.trim() === "") {
+            return;
+        }
+        content = "";
+    }
 </script>
 
 <div
@@ -28,23 +53,26 @@
     >
     <Input
         class="text-lg p-4 bg-transparent focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+        bind:value={content}
         placeholder="Type your message to Alice here..."
     />
-    <svg
-        class="w-[24px] h-[24px] text-gray-800 dark:text-white"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        fill="none"
-        viewBox="0 0 24 24"
-    >
-        <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="3"
-            d="M12 6v13m0-13 4 4m-4-4-4 4"
-        />
-    </svg>
+    <button onclick={submit} aria-label="Send message">
+        <svg
+            class="w-[24px] h-[24px] text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+        >
+            <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="3"
+                d="M12 6v13m0-13 4 4m-4-4-4 4"
+            />
+        </svg>
+    </button>
 </div>
