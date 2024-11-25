@@ -1,23 +1,5 @@
 <script lang="ts">
-    import { listen } from "@tauri-apps/api/event";
-    import { invoke } from "@tauri-apps/api/core";
-
-    listen<boolean>("connection_status", (event) => {
-        connection = event.payload;
-    });
-
-    async function refresh() {
-        connection = await invoke("connection_status");
-    }
-
     let { connection = $bindable() }: { connection: boolean | null } = $props();
-
-    // If the connection status is unknown for too long, refresh it
-    setTimeout(function () {
-        if (connection === null) {
-            refresh();
-        }
-    }, 1000);
 </script>
 
 {#if connection === null}

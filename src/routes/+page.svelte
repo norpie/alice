@@ -10,6 +10,25 @@
     let model: { id: string; name: string; engine: string } | undefined = $state(undefined);
     let showNav: boolean = $state(true);
     let connection: boolean | null = $state(null);
+    async function newConnectionStatus(status: boolean | null) {
+        connection = status;
+    }
+
+    listen<boolean>("connection_status", async (event) => {
+        await newConnectionStatus(event.payload);
+    });
+
+    async function refresh() {
+        connection = await invoke("connection_status");
+        await newConnectionStatus(connection);
+    }
+
+    // If the connection status is unknown for too long, refresh it
+    setTimeout(async () => {
+        if (connection === null) {
+            await refresh();
+        }
+    }, 1000);
 </script>
 
 <div class="flex flex-row h-screen">
