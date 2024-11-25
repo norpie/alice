@@ -3,7 +3,7 @@ use std::fmt::Formatter;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Model {
     pub name: String,
     pub engine: Engine,
@@ -26,10 +26,10 @@ pub enum Engine {
 
 impl fmt::Display for Engine {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            Engine::LlamaCpp => write!(f, "LlamaCpp"),
-            Engine::ExllamaV2 => write!(f, "ExllamaV2"),
-            Engine::Transformers => write!(f, "Transformers"),
-        }
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap().replace("\"", "")
+        )
     }
 }

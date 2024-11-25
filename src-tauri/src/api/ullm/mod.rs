@@ -1,5 +1,11 @@
+use std::collections::HashMap;
+
 use async_trait::async_trait;
-use models::{CompletionParams, CompletionResult, CompletionStatus, LoadParams, Response};
+use models::{
+    CompletionParams, CompletionResult, CompletionStatus, LoadParams, LoadResult, ModelStatus,
+    Response,
+};
+use serde_json::{Map, Value};
 use uuid::Uuid;
 
 use crate::{
@@ -8,7 +14,7 @@ use crate::{
 };
 
 use super::{
-    abstractions::{sockets::ClientSocket, MethodCall},
+    abstractions::{sockets::ClientSocket, MethodCall, MethodReturn},
     Api,
 };
 
@@ -46,16 +52,35 @@ impl Api for UllmApi {
         Ok(true)
     }
 
-    async fn load(&mut self, model: &Model) -> Result<()> {
+    async fn load(
+        &mut self,
+        model: &Model,
+        preload_callback: Box<dyn Fn(String) -> Result<()> + Send + Sync>,
+    ) -> Result<String> {
+        fn should_stop(response: &Response<LoadResult>) -> Result<bool> {
+            Ok(response.result.status == "loaded" || response.result.status == "error")
+        }
+
         let load = MethodCall {
             id: Uuid::new_v4(),
-            method: "load".to_string(),
+            method: "load_model".to_string(),
             params: Some(LoadParams {
                 engine: model.engine.to_string(),
                 model: model.name.clone(),
             }),
         };
-        self.client.send_str(serde_json::to_string(&load)?).await
+
+        self.client.send_str(serde_json::to_string(&load)?).await?;
+
+        Ok(self
+            .client
+            .return_streaming(should_stop, |response| async {
+                preload_callback(response.result.status)
+            })
+            .await?
+            .result
+            .status
+            .to_string())
     }
 
     async fn unload(&mut self) -> Result<()> {
@@ -70,11 +95,15 @@ impl Api for UllmApi {
     async fn list(&mut self) -> Result<Vec<Model>> {
         let list: MethodCall<()> = MethodCall {
             id: Uuid::new_v4(),
-            method: "list".to_string(),
+            method: "list_models".to_string(),
             params: None,
         };
         self.client.send_str(serde_json::to_string(&list)?).await?;
-        self.client.return_single().await
+        let result: HashMap<String, Value> = self.client.return_single().await?;
+        let result: HashMap<String, Vec<Model>> =
+            serde_json::from_value(result.get("result").unwrap().clone())?;
+        let models = result.get("models").unwrap().to_vec();
+        Ok(models)
     }
 
     async fn complete(

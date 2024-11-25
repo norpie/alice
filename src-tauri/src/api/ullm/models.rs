@@ -11,7 +11,31 @@ pub struct Response<T> {
     pub result: T,
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Default, PartialEq, Eq)]
+pub enum ModelStatus {
+    #[serde(rename = "loading")]
+    Loading,
+    #[serde(rename = "loaded")]
+    Loaded,
+    #[default]
+    #[serde(rename = "unloaded")]
+    Unloaded,
+    #[serde(rename = "error")]
+    Error,
+}
+
+impl Display for ModelStatus {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            ModelStatus::Loading => write!(f, "loading"),
+            ModelStatus::Loaded => write!(f, "loaded"),
+            ModelStatus::Unloaded => write!(f, "unloaded"),
+            ModelStatus::Error => write!(f, "error"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Default, PartialEq, Eq)]
 pub enum CompletionStatus {
     #[serde(rename = "success")]
     #[default]
@@ -61,4 +85,11 @@ pub struct LoadParams {
 pub struct CompletionParams {
     pub snippet: String,
     pub engine_parameters: EngineParameters,
+}
+
+#[derive(Default, Debug, Deserialize)]
+pub struct LoadResult {
+    pub status: String,
+    pub engine: Option<String>,
+    pub model: Option<String>,
 }
