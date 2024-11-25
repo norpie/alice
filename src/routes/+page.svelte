@@ -7,8 +7,10 @@
     import Chat from "../parts/Chat.svelte";
     import Input from "../parts/Input.svelte";
 
-    import { invoke } from "@tauri-apps/api/core";
     import { listen } from "@tauri-apps/api/event";
+    import { invoke } from "@tauri-apps/api/core";
+
+    import modelUtils from "../lib/models";
 
     let model: { id: string; name: string; engine: string } | undefined =
         $state(undefined);
@@ -18,26 +20,9 @@
 
     async function reload() {
         if (!connection) {
-            model = undefined;
-            models = [];
             return;
         }
-        const rawModels: { engine: string; name: string }[] =
-            await invoke("list_models");
-        models = modelListToMapWithIndexId(rawModels);
-    }
-
-    function modelListToMapWithIndexId(
-        models: { engine: string; name: string }[],
-    ): { id: string; engine: string; name: string }[] {
-        let map = [];
-        for (let i = 0; i < models.length; i++) {
-            map[i] = {
-                id: i.toString(),
-                ...models[i],
-            };
-        }
-        return map;
+        models = await modelUtils.getModels();
     }
 
     async function newConnectionStatus(status: boolean | null) {
