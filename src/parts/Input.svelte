@@ -5,7 +5,7 @@
     let {
         model = $bindable(),
     }: {
-        model: { id: string; name: string } | null;
+        model: { id: string; name: string; engine: string } | undefined;
     } = $props();
 
     let content = $state("");

@@ -15,7 +15,8 @@
         model: {
             id: string;
             name: string;
-        } | null;
+            engine: string;
+        } | undefined;
     } = $props();
 
     let models = [

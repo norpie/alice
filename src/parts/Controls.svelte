@@ -9,7 +9,7 @@
     }: {
         showNav: boolean;
         connection: boolean | null;
-        model: { id: string; name: string } | null;
+        model: { id: string; name: string; engine: string } | undefined;
     } = $props();
 
     let defaultClass =

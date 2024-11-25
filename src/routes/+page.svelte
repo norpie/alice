@@ -7,7 +7,7 @@
     import Chat from "../parts/Chat.svelte";
     import Input from "../parts/Input.svelte";
 
-    let model: { id: string; name: string } | null = $state(null);
+    let model: { id: string; name: string; engine: string } | undefined = $state(undefined);
     let showNav: boolean = $state(true);
     let connection: boolean | null = $state(null);
 </script>
