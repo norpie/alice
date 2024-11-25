@@ -5,44 +5,26 @@
     import { listen } from "@tauri-apps/api/event";
 
     import { toast } from "svelte-sonner";
-    import { onMount } from "svelte";
 
     let status = $state("unloaded");
 
-    onMount(async () => {
-        const rawModels: { engine: string; name: string }[] =
-            await invoke("list_models");
-        models = modelListToMapWithIndexId(rawModels);
-    });
-
     let {
         model = $bindable(),
+        models = $bindable(),
     }: {
-        model: {
+        model:
+            | {
+                  id: string;
+                  name: string;
+                  engine: string;
+              }
+            | undefined;
+        models: {
             id: string;
-            name: string;
             engine: string;
-        } | undefined;
+            name: string;
+        }[];
     } = $props();
-
-    let models: {
-        id: string;
-        engine: string;
-        name: string;
-    }[] = $state([]);
-
-    function modelListToMapWithIndexId(
-        models: { engine: string; name: string }[],
-    ): { id: string; engine: string; name: string }[] {
-        let map = [];
-        for (let i = 0; i < models.length; i++) {
-            map[i] = {
-                id: i.toString(),
-                ...models[i],
-            };
-        }
-        return map;
-    }
 
     listen<string>("model_load", (event) => {
         status = event.payload;
