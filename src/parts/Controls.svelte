@@ -41,5 +41,5 @@
             /></svg
         >
     </div>
-    <ModelSelector bind:model bind:models />
+    <ModelSelector bind:model bind:models bind:connection />
 </div>

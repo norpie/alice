@@ -52,6 +52,6 @@
     <main class="flex flex-col flex-1 justify-between">
         <Controls bind:showNav bind:connection bind:model bind:models />
         <Chat />
-        <Input bind:model />
+        <Input bind:model bind:connection />
     </main>
 </div>

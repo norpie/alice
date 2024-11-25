@@ -11,6 +11,7 @@
     let {
         model = $bindable(),
         models = $bindable(),
+        connection = $bindable(),
     }: {
         model:
             | {
@@ -24,6 +25,7 @@
             engine: string;
             name: string;
         }[];
+        connection: boolean | null;
     } = $props();
 
     listen<string>("model_load", (event) => {
@@ -42,7 +44,7 @@
 
 <Select.Root
     type="single"
-    disabled={models.length === 0 || status === "loading"}
+    disabled={models.length === 0 || status === "loading" || !connection}
     onValueChange={(value) => loadModel(value)}
 >
     <Select.Trigger class="max-w-[260px] truncate">

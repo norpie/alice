@@ -4,8 +4,10 @@
 
     let {
         model = $bindable(),
+        connection = $bindable(),
     }: {
         model: { id: string; name: string; engine: string } | undefined;
+        connection: boolean | null;
     } = $props();
 
     let content = $state("");
@@ -22,7 +24,7 @@
     };
 
     function submit() {
-        if (!model) {
+        if (!model || !connection) {
             toast.error("No model selected");
             return;
         }
