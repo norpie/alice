@@ -56,7 +56,6 @@ r#"{{{sequence_start}}}{{{system}}}{{{sequence_end}}}
 {{{this.content}}}{{{../suffix}}}{{/each}}{{{sequence_start}}}{{{next_role}}}{{{sequence_end}}}
 "#;
 
-
 #[tokio::main]
 async fn main() -> Result<()> {
     API_MANAGER
@@ -71,7 +70,11 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![commands::connection_status])
+        .invoke_handler(tauri::generate_handler![
+            commands::connection_status,
+            commands::list_models,
+            commands::load_model
+        ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
 
