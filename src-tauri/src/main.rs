@@ -1,12 +1,16 @@
 //Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::OnceLock;
+use std::sync::{LazyLock, OnceLock};
 
 use anyhow::Result;
 use chrono::Utc;
 use manager::Manager;
 use models::{message::Message, parameters::EngineParameters};
+use surrealdb::{
+    engine::local::{Db, RocksDb},
+    Surreal,
+};
 use tauri::AppHandle;
 use tokio::sync::Mutex;
 use wpp::prompting::Prompt;
@@ -32,6 +36,13 @@ macro_rules! api {
     };
 }
 
+macro_rules! db {
+    // Use macro to get the app
+    () => {
+        DB.get().unwrap().lock().await
+    };
+}
+
 mod api;
 mod commands;
 mod events;
@@ -46,6 +57,7 @@ static API_URL: &str = "ws://localhost:8081";
 
 static APP: OnceLock<AppHandle> = OnceLock::new();
 static API_MANAGER: OnceLock<Mutex<Manager>> = OnceLock::new();
+static DB: OnceLock<Surreal<Db>> = OnceLock::new();
 
 #[rustfmt::skip]
 static LLAMA3_PROMPT_TEMPLATE: &str =
@@ -60,6 +72,9 @@ r#"{{{sequence_start}}}{{{system}}}{{{sequence_end}}}
 async fn main() -> Result<()> {
     API_MANAGER
         .set(Manager::new(API_URL.to_string())?.into())
+        .unwrap();
+
+    DB.set(Surreal::new::<RocksDb>("path/to/database-folder").await?)
         .unwrap();
 
     api_manager!().start_keep_alive().await?;
