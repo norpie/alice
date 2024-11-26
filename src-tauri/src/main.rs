@@ -54,6 +54,7 @@ mod manager;
 mod wpp;
 
 static API_URL: &str = "ws://localhost:8081";
+static DATA_DIR: &str = "alice";
 
 static APP: OnceLock<AppHandle> = OnceLock::new();
 static API_MANAGER: OnceLock<Mutex<Manager>> = OnceLock::new();
@@ -74,8 +75,13 @@ async fn main() -> Result<()> {
         .set(Manager::new(API_URL.to_string())?.into())
         .unwrap();
 
-    DB.set(Surreal::new::<RocksDb>("path/to/database-folder").await?)
-        .unwrap();
+    let expanded_data_xdg_data = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
+        let mut path = std::env::var("HOME").unwrap();
+        path.push_str("/.local/share");
+        path
+    });
+    let db = format!("{}/{}/db", expanded_data_xdg_data, DATA_DIR);
+    DB.set(Surreal::new::<RocksDb>(db).await?).unwrap();
 
     api_manager!().start_keep_alive().await?;
 
