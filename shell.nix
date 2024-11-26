@@ -13,6 +13,8 @@ in
       gtk3
       harfbuzz
       librsvg
+      clang
+      libclang
       libsoup_3
       pango
       webkitgtk_4_1
@@ -21,7 +23,7 @@ in
     ];
 
     OPENSSL_NO_VENDOR = 1;
-    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [openssl]);
+    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [openssl libclang]);
     OPENSSL_LIB_DIR = "${pkgs.lib.getLib pkgs.openssl}/lib";
     OPENSSL_DIR = "${pkgs.openssl.dev}";
     PKG_CONFIG_PATH = with pkgs; "\
