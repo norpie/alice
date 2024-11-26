@@ -31,3 +31,9 @@ pub enum AliceError {
     #[error("Invalid message")]
     InvalidMessage,
 }
+
+impl From<AliceError> for String {
+    fn from(value: AliceError) -> Self {
+        format!("{}", value)
+    }
+}
