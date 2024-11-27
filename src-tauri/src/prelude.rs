@@ -22,6 +22,10 @@ pub enum AliceError {
     #[error("OnceLock is empty")]
     OnceLockEmpty,
 
+    // SurrealDB
+    #[error("SurrealDB error: {0}")]
+    SurrealDB(#[from] surrealdb::Error),
+
     // Handlebars
     #[error("Handlebars error: {0}")]
     Handlebars(#[from] handlebars::RenderError),
