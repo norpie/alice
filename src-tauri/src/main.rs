@@ -56,7 +56,6 @@ mod responses;
 mod manager;
 mod wpp;
 
-static API_URL: &str = "ws://localhost:8081";
 static DATA_DIR: &str = "alice";
 
 static APP: OnceLock<AppHandle> = OnceLock::new();
@@ -74,23 +73,24 @@ r#"{{{sequence_start}}}{{{system}}}{{{sequence_end}}}
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    API_MANAGER
-        .set(Manager::new(API_URL.to_string())?.into())
-        .unwrap();
-
     let expanded_data_xdg_data = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
         let mut path = std::env::var("HOME").unwrap();
         path.push_str("/.local/share");
         path
     });
-    let db = format!("{}/{}/db", expanded_data_xdg_data, DATA_DIR);
-    DB.set(Surreal::new::<RocksDb>(db).await?).unwrap();
+    let db_path = format!("{}/{}/db", expanded_data_xdg_data, DATA_DIR);
+    let db = Surreal::new::<RocksDb>(db_path).await?;
+    db.use_ns("alice").await?;
+    db.use_db("local").await?;
+    DB.set(db).expect("Failed to set db");
 
+    let api = Config::get_default_api().await?;
+    API_MANAGER.set(Manager::new(api)?.into()).expect("Failed to set manager");
     api_manager!().start_keep_alive().await?;
 
     tauri::Builder::default()
         .setup(|app| {
-            APP.set(app.handle().clone()).unwrap();
+            APP.set(app.handle().clone()).expect("Failed to set app");
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
