@@ -10,8 +10,8 @@
     }: {
         showNav: boolean;
         connection: boolean | null;
-        model: { id: string; name: string; engine: string } | undefined;
-        models: { id: string; engine: string; name: string }[];
+        model: { name: string; engine: string } | undefined;
+        models: { engine: string; name: string }[];
     } = $props();
 
     let defaultClass =

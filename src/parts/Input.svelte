@@ -6,7 +6,7 @@
         model = $bindable(),
         connection = $bindable(),
     }: {
-        model: { id: string; name: string; engine: string } | undefined;
+        model: { name: string; engine: string } | undefined;
         connection: boolean | null;
     } = $props();
 

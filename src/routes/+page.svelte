@@ -12,9 +12,9 @@
 
     import modelUtils from "../lib/models";
 
-    let model: { id: string; name: string; engine: string } | undefined =
+    let model: { name: string; engine: string } | undefined =
         $state(undefined);
-    let models: { id: string; engine: string; name: string }[] = $state([]);
+    let models: { engine: string; name: string }[] = $state([]);
     let showNav: boolean = $state(true);
     let connection: boolean | null = $state(null);
 

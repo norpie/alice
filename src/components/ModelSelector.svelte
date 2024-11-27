@@ -15,13 +15,11 @@
     }: {
         model:
             | {
-                  id: string;
                   name: string;
                   engine: string;
               }
             | undefined;
         models: {
-            id: string;
             engine: string;
             name: string;
         }[];
@@ -36,7 +34,10 @@
 
     async function loadModel(value: string) {
         if (status == "loading") return;
-        model = models.find((m) => m.id === value);
+        const split = value.split("|");
+        model = models.find(
+            (m) => m.engine === split[0] && m.name === split[1],
+        );
         if (!model) return;
         await invoke("load_model", { model });
     }
@@ -56,7 +57,9 @@
     </Select.Trigger>
     <Select.Content>
         {#each models as model}
-            <Select.Item value={model.id}>{model.name}</Select.Item>
+            <Select.Item value={model.engine + "|" + model.name}
+                >{model.name}</Select.Item
+            >
         {/each}
     </Select.Content>
 </Select.Root>

@@ -13,12 +13,11 @@ function modelListToMapWithIndexId(
   return map;
 }
 
-async function getModels(): Promise<
-  { id: string; engine: string; name: string }[]
-> {
+async function getModels(): Promise<{ engine: string; name: string }[]> {
   const rawModels: { engine: string; name: string }[] =
     await invoke("list_models");
-  return modelListToMapWithIndexId(rawModels);
+  // return modelListToMapWithIndexId(rawModels);
+  return rawModels;
 }
 
 export default { getModels };
