@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use async_trait::async_trait;
 use models::{
-    CompletionParams, CompletionResult, CompletionStatus, LoadParams, LoadResult, ModelStatus,
-    Response,
+    CompletionParams, CompletionResult, CompletionStatus, LoadParams, LoadResult, ModelListResult,
+    ModelStatus, Response,
 };
 use serde_json::{Map, Value};
 use uuid::Uuid;
@@ -110,12 +110,15 @@ impl Api for UllmApi {
             method: "list_models".to_string(),
             params: None,
         };
+
         self.client.send_str(serde_json::to_string(&list)?).await?;
-        let result: HashMap<String, Value> = self.client.return_single().await?;
-        let result: HashMap<String, Vec<Model>> =
-            serde_json::from_value(result.get("result").unwrap().clone())?;
-        let models = result.get("models").unwrap().to_vec();
-        Ok(models)
+
+        Ok(self
+            .client
+            .return_single::<Response<ModelListResult>>()
+            .await?
+            .result
+            .models)
     }
 
     async fn complete(

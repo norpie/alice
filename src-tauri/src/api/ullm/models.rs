@@ -3,7 +3,7 @@ use std::fmt::{self, Display, Formatter};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::models::parameters::EngineParameters;
+use crate::models::{model::Model, parameters::EngineParameters};
 
 #[derive(Debug, Deserialize, Default)]
 pub struct Response<T> {
@@ -92,4 +92,9 @@ pub struct LoadResult {
     pub status: String,
     pub engine: Option<String>,
     pub model: Option<String>,
+}
+
+#[derive(Default, Debug, Deserialize)]
+pub struct ModelListResult {
+    pub models: Vec<Model>,
 }
