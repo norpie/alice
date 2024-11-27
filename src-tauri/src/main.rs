@@ -85,7 +85,9 @@ async fn main() -> Result<()> {
     DB.set(db).expect("Failed to set db");
 
     let api = Config::get_default_api().await?;
-    API_MANAGER.set(Manager::new(api)?.into()).expect("Failed to set manager");
+    API_MANAGER
+        .set(Manager::new(api)?.into())
+        .expect("Failed to set manager");
     api_manager!().start_keep_alive().await?;
 
     tauri::Builder::default()
