@@ -99,7 +99,9 @@ async fn main() -> Result<()> {
             commands::connection::connection_status,
             // Model commands
             commands::models::list_models,
-            commands::models::load_model
+            commands::models::status,
+            commands::models::load_model,
+            commands::models::unload_model
         ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
