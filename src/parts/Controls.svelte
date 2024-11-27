@@ -16,7 +16,11 @@
 
     let defaultClass =
         "flex flex-col max-w-[260px] p-4 transition-all duration-300";
-    let showNavClass = $derived(showNav ? defaultClass + " -translate-y-[50%]" : defaultClass + " translate-y-0");
+    let showNavClass = $derived(
+        showNav
+            ? defaultClass + " -translate-y-[50%]"
+            : defaultClass + " translate-y-0",
+    );
 </script>
 
 <div class={showNavClass}>
