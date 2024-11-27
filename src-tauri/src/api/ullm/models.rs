@@ -88,7 +88,7 @@ pub struct CompletionParams {
 }
 
 #[derive(Default, Debug, Deserialize)]
-pub struct LoadResult {
+pub struct StatusResult {
     pub status: String,
     pub engine: Option<Engine>,
     pub model: Option<String>,

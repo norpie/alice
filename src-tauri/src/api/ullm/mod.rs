@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use async_trait::async_trait;
 use models::{
-    CompletionParams, CompletionResult, CompletionStatus, LoadParams, LoadResult, ModelListResult,
-    ModelStatus, Response,
+    CompletionParams, CompletionResult, CompletionStatus, LoadParams, ModelListResult, ModelStatus,
+    Response, StatusResult,
 };
 use serde_json::{Map, Value};
 use uuid::Uuid;
@@ -57,7 +57,7 @@ impl Api for UllmApi {
         model: &Model,
         preload_callback: Box<dyn Fn(String) -> Result<()> + Send + Sync>,
     ) -> Result<String> {
-        fn should_stop(response: &Response<LoadResult>) -> Result<bool> {
+        fn should_stop(response: &Response<StatusResult>) -> Result<bool> {
             Ok(response.result.status == "loaded" || response.result.status == "error")
         }
 
@@ -95,7 +95,7 @@ impl Api for UllmApi {
             .await?;
 
         self.client
-            .return_single::<MethodReturn<LoadResult>>()
+            .return_single::<MethodReturn<StatusResult>>()
             .await
             .map(|_| ())
     }
@@ -112,7 +112,7 @@ impl Api for UllmApi {
             .await?;
 
         self.client
-            .return_single::<Response<LoadResult>>()
+            .return_single::<Response<StatusResult>>()
             .await
             .map(
                 |response| match (response.result.model, response.result.engine) {
