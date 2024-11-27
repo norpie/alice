@@ -1,11 +1,8 @@
-use std::collections::HashMap;
-
 use async_trait::async_trait;
 use models::{
-    CompletionParams, CompletionResult, CompletionStatus, LoadParams, ModelListResult, ModelStatus,
-    Response, StatusResult,
+    CompletionParams, CompletionResult, CompletionStatus, LoadParams, ModelListResult, Response,
+    StatusResult,
 };
-use serde_json::{Map, Value};
 use uuid::Uuid;
 
 use crate::{
