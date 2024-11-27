@@ -100,7 +100,7 @@ impl Api for UllmApi {
             .map(|_| ())
     }
 
-    async fn current(&mut self) -> Result<Option<Model>> {
+    async fn status(&mut self) -> Result<Option<Model>> {
         let status: MethodCall<()> = MethodCall {
             id: Uuid::new_v4(),
             method: "status".to_string(),
