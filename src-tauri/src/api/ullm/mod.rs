@@ -114,15 +114,16 @@ impl Api for UllmApi {
         self.client
             .return_single::<Response<StatusResult>>()
             .await
-            .map(
-                |response| match (response.result.model, response.result.engine) {
-                    (Some(model), Some(engine)) => Some(Model {
+            .map(|response| {
+                response
+                    .result
+                    .model
+                    .zip(response.result.engine)
+                    .map(|(model, engine)| Model {
                         name: model,
                         engine,
-                    }),
-                    _ => None,
-                },
-            )
+                    })
+            })
     }
 
     async fn list(&mut self) -> Result<Vec<Model>> {
