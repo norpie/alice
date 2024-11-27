@@ -22,6 +22,7 @@ pub trait Api: Send + Sync {
     ) -> Result<String>;
     async fn unload(&mut self) -> Result<()>;
 
+    async fn current(&mut self) -> Result<Option<Model>>;
     async fn list(&mut self) -> Result<Vec<Model>>;
 
     async fn complete(
