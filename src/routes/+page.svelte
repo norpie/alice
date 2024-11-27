@@ -22,6 +22,7 @@
         if (!connection) {
             return;
         }
+        model = await modelUtils.getModel();
         models = await modelUtils.getModels();
     }
 

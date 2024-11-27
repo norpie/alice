@@ -20,4 +20,10 @@ async function getModels(): Promise<{ engine: string; name: string }[]> {
   return rawModels;
 }
 
-export default { getModels };
+async function getModel(): Promise<
+  { engine: string; name: string } | undefined
+> {
+  return await invoke("status");
+}
+
+export default { getModels, getModel };
