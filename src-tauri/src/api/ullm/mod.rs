@@ -89,7 +89,15 @@ impl Api for UllmApi {
             method: "unload".to_string(),
             params: None,
         };
-        self.client.send_str(serde_json::to_string(&unload)?).await
+
+        self.client
+            .send_str(serde_json::to_string(&unload)?)
+            .await?;
+
+        self.client
+            .return_single::<MethodReturn<LoadResult>>()
+            .await
+            .map(|_| ())
     }
 
     async fn current(&mut self) -> Result<Option<Model>> {
