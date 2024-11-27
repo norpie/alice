@@ -92,9 +92,11 @@ async fn main() -> Result<()> {
         })
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
-            commands::connection_status,
-            commands::list_models,
-            commands::load_model
+            // Connection commands
+            commands::connection::connection_status,
+            // Model commands
+            commands::models::list_models,
+            commands::models::load_model
         ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
