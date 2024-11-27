@@ -1,4 +1,4 @@
-use crate::{events, prelude::*};
+use crate::{api::Api, events, prelude::*};
 
 use std::{fmt::Debug, sync::Arc, time::Duration};
 
@@ -11,8 +11,6 @@ use tokio::{
     time,
 };
 
-use crate::api::{ullm::UllmApi, Api};
-
 pub struct Manager {
     pub api: Arc<Mutex<dyn Api>>,
     keep_alive: Arc<Mutex<Option<JoinHandle<()>>>>,
@@ -20,10 +18,9 @@ pub struct Manager {
 }
 
 impl Manager {
-    pub fn new(address: String) -> Result<Self> {
-        let api = UllmApi::new(address)?;
+    pub fn new(api: Arc<Mutex<dyn Api>>) -> Result<Self> {
         Ok(Self {
-            api: Arc::new(Mutex::new(api)),
+            api,
             keep_alive: Arc::new(Mutex::new(None)),
             keep_alive_stop_signal: Arc::new(Mutex::new(None)),
         })

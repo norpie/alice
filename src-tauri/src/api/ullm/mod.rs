@@ -1,8 +1,11 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use models::{
     CompletionParams, CompletionResult, CompletionStatus, LoadParams, ModelListResult, Response,
     StatusResult,
 };
+use tokio::sync::Mutex;
 use uuid::Uuid;
 
 use crate::{
@@ -22,10 +25,10 @@ pub struct UllmApi {
 }
 
 impl UllmApi {
-    pub fn new(addr: String) -> Result<Self> {
-        Ok(Self {
+    pub fn new(addr: String) -> Result<Arc<Mutex<Self>>> {
+        Ok(Arc::new(Mutex::new(Self {
             client: ClientSocket::new(addr)?,
-        })
+        })))
     }
 }
 
