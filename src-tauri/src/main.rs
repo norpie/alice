@@ -1,10 +1,12 @@
 //Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 
 use anyhow::Result;
+use api::ullm::UllmApi;
 use chrono::Utc;
+use config::Config;
 use manager::Manager;
 use models::{message::Message, parameters::EngineParameters};
 use surrealdb::{
@@ -39,12 +41,13 @@ macro_rules! api {
 macro_rules! db {
     // Use macro to get the app
     () => {
-        DB.get().unwrap().lock().await
+        DB.get().unwrap()
     };
 }
 
 mod api;
 mod commands;
+mod config;
 mod events;
 mod models;
 mod prelude;
