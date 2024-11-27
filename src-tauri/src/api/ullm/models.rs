@@ -3,7 +3,7 @@ use std::fmt::{self, Display, Formatter};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::models::{model::Model, parameters::EngineParameters};
+use crate::models::{model::{Engine, Model}, parameters::EngineParameters};
 
 #[derive(Debug, Deserialize, Default)]
 pub struct Response<T> {
@@ -90,7 +90,7 @@ pub struct CompletionParams {
 #[derive(Default, Debug, Deserialize)]
 pub struct LoadResult {
     pub status: String,
-    pub engine: Option<String>,
+    pub engine: Option<Engine>,
     pub model: Option<String>,
 }
 

@@ -101,7 +101,28 @@ impl Api for UllmApi {
     }
 
     async fn current(&mut self) -> Result<Option<Model>> {
-        Err("Not implemented".into())
+        let status: MethodCall<()> = MethodCall {
+            id: Uuid::new_v4(),
+            method: "status".to_string(),
+            params: None,
+        };
+
+        self.client
+            .send_str(serde_json::to_string(&status)?)
+            .await?;
+
+        self.client
+            .return_single::<Response<LoadResult>>()
+            .await
+            .map(
+                |response| match (response.result.model, response.result.engine) {
+                    (Some(model), Some(engine)) => Some(Model {
+                        name: model,
+                        engine,
+                    }),
+                    _ => None,
+                },
+            )
     }
 
     async fn list(&mut self) -> Result<Vec<Model>> {
