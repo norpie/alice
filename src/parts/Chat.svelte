@@ -1,8 +1,6 @@
 <script lang="ts">
     import { Separator } from "$lib/components/ui/separator/index.js";
 
-    import "highlight.js/styles/base16/onedark.css";
-
     import placeholder from "../lib/placeholder";
     import { toHtml } from "$lib/markdown";
     import { CodeBlock } from "svhighlight";
