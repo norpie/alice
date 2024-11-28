@@ -48,6 +48,7 @@ macro_rules! db {
 mod api;
 mod commands;
 mod config;
+mod conversation;
 mod events;
 mod models;
 mod prelude;
@@ -103,7 +104,7 @@ async fn main() -> Result<()> {
             commands::models::list_models,
             commands::models::status,
             commands::models::load_model,
-            commands::models::unload_model
+            commands::models::unload_model,
         ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;

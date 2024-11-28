@@ -10,6 +10,9 @@ pub enum AliceError {
     #[error("Other error: {0}")]
     Other(String),
 
+    #[error("Index out of bounds: {0}")]
+    IndexOutOfBounds(usize),
+
     // Serde
     #[error("Serde error: {0}")]
     Serde(#[from] serde_json::Error),
@@ -25,6 +28,8 @@ pub enum AliceError {
     // SurrealDB
     #[error("SurrealDB error: {0}")]
     SurrealDB(#[from] surrealdb::Error),
+    #[error("Failed to `{0}` SurrealDB Object with record: {1}")]
+    DatabaseOperation(String, String),
 
     // Handlebars
     #[error("Handlebars error: {0}")]
