@@ -27,13 +27,11 @@
     let connection: boolean | null = $state(null);
 
     $effect(() => {
-        if (conversationId) {
-            find(conversationId).then((c) => {
-                untrack(() => {
-                    conversation = c;
-                });
+        find(conversationId).then((c) => {
+            untrack(() => {
+                conversation = c;
             });
-        }
+        });
     });
 
     async function reload() {
@@ -67,8 +65,19 @@
 <div class="flex flex-row h-screen">
     <Nav bind:showNav bind:connection bind:conversationId bind:conversations />
     <main class="flex flex-col flex-1 justify-between">
-        <Controls bind:showNav bind:connection bind:model bind:models />
+        <Controls
+            bind:showNav
+            bind:connection
+            bind:model
+            bind:models
+            bind:conversationId
+        />
         <Chat bind:conversation />
-        <Input bind:model bind:connection bind:conversation bind:conversations />
+        <Input
+            bind:model
+            bind:connection
+            bind:conversation
+            bind:conversations
+        />
     </main>
 </div>
