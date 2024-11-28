@@ -105,6 +105,15 @@ async fn main() -> Result<()> {
             commands::models::status,
             commands::models::load_model,
             commands::models::unload_model,
+            // Conversation commands
+            commands::conversation::new_conversation,
+            commands::conversation::conversations_date_sorted,
+            commands::conversation::find_conversation,
+            commands::conversation::set_conversation_name,
+            commands::conversation::new_message,
+            commands::conversation::delete_message,
+            commands::conversation::with_replaced_message,
+
         ])
         .run(tauri::generate_context!())
         .map_err(|e| anyhow::anyhow!("Failed to run tauri: {}", e))?;
