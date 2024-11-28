@@ -1,18 +1,28 @@
 <script lang="ts">
     import { Input } from "$lib/components/ui/input/index.js";
+    import {
+        convert,
+        getConversations,
+        type Conversation,
+    } from "$lib/conversation";
+    import { invoke } from "@tauri-apps/api/core";
     import { toast } from "svelte-sonner";
 
     let {
         model = $bindable(),
         connection = $bindable(),
+        conversation = $bindable(),
+        conversations = $bindable(),
     }: {
         model: { name: string; engine: string } | undefined;
         connection: boolean | null;
+        conversation: Conversation | null;
+        conversations: Conversation[];
     } = $props();
 
     let content = $state("");
 
-    onkeydown = (event: KeyboardEvent) => {
+    onkeydown = async (event: KeyboardEvent) => {
         if (event.key !== "Enter") {
             return;
         }
@@ -20,15 +30,36 @@
         if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
             return;
         }
-        submit();
+        await submit();
     };
 
-    function submit() {
+    async function submit() {
+        if (!content || content.trim() === "") {
+            return;
+        }
         if (!model || !connection) {
             toast.error("No model selected");
             return;
         }
-        if (!content || content.trim() === "") {
+        if (!conversation) {
+            conversation = convert(await invoke("new_conversation"));
+        }
+        if (!conversation) {
+            toast.error("Failed to create conversation");
+            return;
+        }
+        try {
+            conversation = convert(
+                await invoke("new_message", {
+                    id: conversation.id,
+                    role: "user",
+                    message: content,
+                }),
+            );
+            conversations = await getConversations(100, 0);
+        } catch (e) {
+            toast.error("Failed to send message");
+            console.error(e);
             return;
         }
         content = "";
