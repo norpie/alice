@@ -5,7 +5,7 @@ use crate::DB;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use surrealdb::opt::PatchOp;
-use surrealdb::{sql::Uuid, RecordId};
+use surrealdb::RecordId;
 
 use crate::models::message::Message;
 
@@ -18,6 +18,14 @@ pub struct LeanConversation {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct InsertableConversation {
+    pub name: String,
+    pub start_time: DateTime<Utc>,
+    pub modified_time: DateTime<Utc>,
+    pub messages: Vec<Message>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Conversation {
     pub id: RecordId,
     pub name: String,
@@ -26,11 +34,10 @@ pub struct Conversation {
     pub messages: Vec<Message>,
 }
 
-impl Default for Conversation {
+impl Default for InsertableConversation {
     fn default() -> Self {
         let time = Utc::now();
         Self {
-            id: RecordId::from(("conversation", Uuid::new_v7().to_string())),
             name: format!("Unnamed Conversation - {}", time.to_rfc3339()),
             start_time: time,
             modified_time: time,
@@ -43,7 +50,7 @@ impl Conversation {
     pub async fn new() -> Result<Self> {
         db!()
             .create("conversation")
-            .content(Conversation::default())
+            .content(InsertableConversation::default())
             .await?
             .ok_or(AliceError::DatabaseOperation(
                 "create".into(),
@@ -52,9 +59,8 @@ impl Conversation {
     }
 
     pub async fn find(id: String) -> Result<Self> {
-        let id = RecordId::from(("conversation", id));
         db!()
-            .select(&id)
+            .select(("conversation", &id))
             .await?
             .ok_or(AliceError::DatabaseOperation(
                 "select".into(),
@@ -63,14 +69,15 @@ impl Conversation {
     }
 
     pub async fn date_sorted_lean(limit: usize, offset: usize) -> Result<Vec<LeanConversation>> {
-        Ok(db!()
+        let mut result = db!()
             .query(
                 "SELECT id, name, start_time, modified_time FROM conversation ORDER BY modified_time DESC LIMIT $limit START $offset",
             )
             .bind(("limit", limit))
             .bind(("offset", offset))
-            .await?
-            .take(0)?)
+            .await?.take(0)?;
+        dbg!(&result);
+        Ok(result)
     }
 
     pub async fn with_name(self, name: String) -> Result<Self> {
