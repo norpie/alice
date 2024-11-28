@@ -110,7 +110,7 @@ async fn main() -> Result<()> {
 
     let messages = vec![Message {
         timestamp: Utc::now(),
-        author: "user".to_string(),
+        role: "user".to_string(),
         content: "Where is the Madou tower?".to_string(),
     }];
 

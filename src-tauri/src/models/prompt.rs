@@ -7,7 +7,7 @@ You are Alice, an intelligent AI chatbot. You are having a conversation with a h
 pub fn chat_prompt(history: History, turn: String) -> String {
     let mut prompt = DEFAULT_PROMPT.to_string();
     for message in history.messages.iter() {
-        prompt.push_str(&format!("{}: {}\n", message.author, message.content));
+        prompt.push_str(&format!("{}: {}\n", message.role, message.content));
     }
     prompt.push_str(&format!("{}: ", turn));
     prompt

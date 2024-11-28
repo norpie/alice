@@ -58,19 +58,19 @@ mod tests {
             messages: vec![
                 Message {
                     timestamp: Utc::now(),
-                    author: "Alice".to_string(),
+                    role: "Alice".to_string(),
                     content: "Hello".to_string(),
                 },
                 Message {
                     timestamp: Utc::now(),
-                    author: "Bob".to_string(),
+                    role: "Bob".to_string(),
                     content: "Hi, how are you?".to_string(),
                 },
             ],
         };
         let partial = history.into_partial(1);
         assert_eq!(partial.messages.len(), 1);
-        assert_eq!(partial.messages[0].author, "Bob");
+        assert_eq!(partial.messages[0].role, "Bob");
     }
 
     #[test]
@@ -81,12 +81,12 @@ mod tests {
             messages: vec![
                 Message {
                     timestamp: Utc::now(),
-                    author: "Alice".to_string(),
+                    role: "Alice".to_string(),
                     content: "Hello".to_string(),
                 },
                 Message {
                     timestamp: Utc::now(),
-                    author: "Bob".to_string(),
+                    role: "Bob".to_string(),
                     content: "Hi, how are you?".to_string(),
                 },
             ],
@@ -97,20 +97,20 @@ mod tests {
             messages: vec![
                 Message {
                     timestamp: Utc::now(),
-                    author: "Bob".to_string(),
+                    role: "Bob".to_string(),
                     content: "Hi, how are you?".to_string(),
                 },
                 Message {
                     timestamp: Utc::now(),
-                    author: "Alice".to_string(),
+                    role: "Alice".to_string(),
                     content: "I'm good, thanks!".to_string(),
                 },
             ],
         };
         history.merge_partial(partial);
         assert_eq!(history.messages.len(), 3);
-        assert_eq!(history.messages[0].author, "Alice");
-        assert_eq!(history.messages[1].author, "Bob");
-        assert_eq!(history.messages[2].author, "Alice");
+        assert_eq!(history.messages[0].role, "Alice");
+        assert_eq!(history.messages[1].role, "Bob");
+        assert_eq!(history.messages[2].role, "Alice");
     }
 }
