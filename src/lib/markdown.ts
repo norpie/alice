@@ -18,7 +18,6 @@ type Chunk = string | [string, string];
 
 function htmlize(messages: RawMesssage[]): Message[] {
     if (!messages) {
-        console.log("No conversation");
         return [];
     }
     return messages.map((message) => {

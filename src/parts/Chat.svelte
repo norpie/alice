@@ -9,8 +9,6 @@
     }: {
         conversation: Conversation | null;
     } = $props();
-
-    $inspect(conversation);
 </script>
 
 {#snippet icon(role: string)}
